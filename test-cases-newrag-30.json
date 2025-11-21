@@ -1,0 +1,56 @@
+{
+  "test_suite": "NewRAG Merge Validation",
+  "total_cases": 30,
+  "categories": {
+    "algorithms": [
+      "dynamic programming optimization",
+      "graph traversal algorithms",
+      "sorting complexity analysis"
+    ],
+    "design_patterns": [
+      "factory pattern implementation",
+      "observer pattern example",
+      "singleton thread safety"
+    ],
+    "clean_code": [
+      "SOLID principles explanation",
+      "code smell refactoring",
+      "DRY principle examples"
+    ],
+    "databases": [
+      "SQL injection prevention",
+      "database normalization forms",
+      "indexing performance optimization"
+    ],
+    "security": [
+      "XSS attack prevention",
+      "authentication best practices",
+      "encryption algorithms comparison"
+    ],
+    "python": [
+      "Python decorators usage",
+      "asyncio concurrency patterns",
+      "type hints benefits"
+    ],
+    "php": [
+      "PHP namespace organization",
+      "PDO prepared statements",
+      "Laravel service container"
+    ],
+    "javascript": [
+      "JavaScript closures explanation",
+      "Promise async await",
+      "event loop mechanism"
+    ],
+    "testing": [
+      "unit testing best practices",
+      "TDD workflow steps",
+      "mock object patterns"
+    ],
+    "architecture": [
+      "microservices architecture benefits",
+      "REST API design",
+      "CQRS pattern explanation"
+    ]
+  }
+}

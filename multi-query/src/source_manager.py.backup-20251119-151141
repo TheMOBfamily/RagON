@@ -1,0 +1,231 @@
+from __future__ import annotations
+from pathlib import Path
+from dataclasses import dataclass
+from typing import List
+from rich.console import Console
+from rich.table import Table
+import random
+from messages import THINK_ULTRA_NOTICE  # Changed from relative to absolute import
+
+console = Console()
+
+
+@dataclass
+class SourceInfo:
+    """Information about a RAG source (PDF folder)"""
+    name: str
+    path: str
+    pdf_count: int
+    
+    def __str__(self) -> str:
+        return f"{self.name} ({self.pdf_count} PDFs)"
+
+
+def discover_sources(base_dir: str, external_sources: List[str] = None) -> List[SourceInfo]:
+    """
+    Discover all RAG sources from base_dir and external sources.
+    
+    Supports 2 formats:
+    1. Hash-based: DKM-PDFs/<hash>/{index.faiss, index.pkl}
+    2. Traditional: <path>/.mini_rag_index/{index.faiss, index.pkl}
+    
+    Args:
+        base_dir: Base directory (DKM-PDFs)
+        external_sources: List of external RAG paths
+        
+    Returns:
+        List of SourceInfo
+    """
+    base_path = Path(base_dir)
+    sources = []
+    
+    # Discover from base_dir (hash-based structure)
+    if base_path.exists():
+        for subdir in base_path.iterdir():
+            if not subdir.is_dir():
+                continue
+
+            # Skip merged output folder to prevent infinite loop
+            if subdir.name == ".mini_rag_index":
+                continue
+
+            # Check if it's a trained folder (hash-based: index files directly)
+            has_faiss = (subdir / "index.faiss").exists()
+            has_pkl = (subdir / "index.pkl").exists()
+
+            if has_faiss and has_pkl:
+                # Get PDF name from metadata if available
+                metadata_file = subdir / "metadata.json"
+                if metadata_file.exists():
+                    import json
+                    try:
+                        metadata = json.loads(metadata_file.read_text())
+                        pdf_name = metadata.get("filename", subdir.name)
+                    except:
+                        pdf_name = subdir.name
+                else:
+                    pdf_name = subdir.name
+                
+                sources.append(SourceInfo(
+                    name=pdf_name,
+                    path=str(subdir),
+                    pdf_count=1
+                ))
+    
+    # Discover from external sources (traditional .mini_rag_index structure)
+    if external_sources:
+        for ext_path in external_sources:
+            ext_path_obj = Path(ext_path)
+            if not ext_path_obj.exists():
+                console.print(f"[yellow]Warning: External path not found: {ext_path}")
+                continue
+            
+            # Check for .mini_rag_index subfolder
+            index_dir = ext_path_obj / ".mini_rag_index"
+            if index_dir.exists():
+                has_faiss = (index_dir / "index.faiss").exists()
+                has_pkl = (index_dir / "index.pkl").exists()
+                
+                if has_faiss and has_pkl:
+                    # Use folder name as source name
+                    source_name = ext_path_obj.name
+                    
+                    # Count PDFs if available
+                    pdf_count = len(list(ext_path_obj.glob("*.pdf")))
+                    
+                    sources.append(SourceInfo(
+                        name=f"{source_name} (external)",
+                        path=str(index_dir),  # Point to .mini_rag_index folder
+                        pdf_count=pdf_count if pdf_count > 0 else 1
+                    ))
+    
+    return sorted(sources, key=lambda s: s.name)
+
+
+def list_sources(base_dir: str, external_sources: List[str] = None) -> List[SourceInfo]:
+    """List available sources with numbered display"""
+    sources = discover_sources(base_dir, external_sources)
+    
+    if not sources:
+        console.print(f"[yellow]No RAG sources found")
+        return sources
+    
+    # Think Ultra guidance for source selection (centralized from messages.py)
+    console.print(THINK_ULTRA_NOTICE, style="bold blue")
+    table = Table(title="Available RAG Sources")
+    table.add_column("No.", style="cyan", justify="right")
+    table.add_column("Source Name", style="green")
+    table.add_column("Count", style="magenta", justify="right")
+    table.add_column("Path", style="dim")
+    
+    for idx, source in enumerate(sources, 1):
+        table.add_row(
+            str(idx),
+            source.name,
+            str(source.pdf_count),
+            source.path
+        )
+    
+    console.print(table)
+    console.print(f"\n[bold]Total sources found:[/bold] {len(sources)}")
+    
+    return sources
+
+
+def select_sources(
+    sources: List[SourceInfo], 
+    selections: str | None
+) -> List[SourceInfo]:
+    """
+    Select sources by comma-separated numbers.
+    If selections is None, return all sources.
+    """
+    if not selections:
+        return sources
+    
+    try:
+        indices = [int(s.strip()) for s in selections.split(",")]
+        selected = []
+        for idx in indices:
+            if 1 <= idx <= len(sources):
+                selected.append(sources[idx - 1])
+            else:
+                console.print(f"[yellow]Warning: Invalid source number {idx} (max: {len(sources)})")
+        return selected
+    except ValueError as e:
+        console.print(f"[red]Error parsing source selections: {e}")
+        return sources
+
+
+def list_pdfs_metadata(base_dir: str) -> List[dict]:
+    """
+    List all PDFs from hash-based structure with metadata in RANDOM order.
+
+    Returns list of dicts with:
+    - filename: Original PDF filename
+    - file_hash: MD5 hash (folder name)
+
+    Args:
+        base_dir: Base directory (DKM-PDFs)
+
+    Returns:
+        List of PDF metadata dicts (randomized order)
+    """
+    base_path = Path(base_dir)
+    pdfs = []
+
+    if not base_path.exists():
+        console.print(f"[red]Error: Directory not found: {base_dir}")
+        return pdfs
+
+    # Collect all subdirectories first
+    subdirs = [d for d in base_path.iterdir() if d.is_dir()]
+
+    # Randomize the order
+    random.shuffle(subdirs)
+
+    for subdir in subdirs:
+        # Check for metadata.json
+        metadata_file = subdir / "metadata.json"
+        if metadata_file.exists():
+            import json
+            try:
+                metadata = json.loads(metadata_file.read_text())
+                pdfs.append({
+                    "filename": metadata.get("filename", subdir.name),
+                    "file_hash": metadata.get("file_hash", subdir.name)
+                })
+            except Exception as e:
+                console.print(f"[yellow]Warning: Failed to read {metadata_file}: {e}")
+
+    return pdfs
+
+
+def filter_sources_by_hashes(
+    sources: List[SourceInfo],
+    hash_ids: List[str]
+) -> List[SourceInfo]:
+    """
+    Filter sources by list of hash IDs.
+    
+    Args:
+        sources: List of all sources
+        hash_ids: List of hash IDs to filter (e.g., ['aa4a4de3...', 'bb5c7ef8...'])
+        
+    Returns:
+        Filtered list of sources
+    """
+    if not hash_ids:
+        return sources
+    
+    # Normalize hash IDs (lowercase)
+    hash_set = {h.strip().lower() for h in hash_ids}
+    
+    filtered = []
+    for source in sources:
+        # Extract hash from path (last component)
+        source_hash = Path(source.path).name.lower()
+        if source_hash in hash_set:
+            filtered.append(source)
+    
+    return filtered

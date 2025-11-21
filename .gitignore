@@ -1,0 +1,79 @@
+# Node.js dependencies
+node_modules/
+package-lock.json
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments (placed outside repo root; but ignore fallback names just in case)
+.env
+.venv
+venv/
+ENV/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage*
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VSCode
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Cache
+.cache/
+
+# Local data outputs
+*.sqlite3
+vector_store/
+
+# Vector store directory
+.mini_rag_index/
+DKM-PDFs/.mini_rag_index/
+
+# Logs
+logs/
+*.log
+
+# Environment variables
+.env.local
+.env.*
+
+# PDF files (ebooks, documents)
+*.pdf
+
+# FAISS vector store files
+*.pkl
+*.faiss
+*.index
+
+# Large archive files
+*.7z
+*.tar.gz
+*.zip
+
+# Data directories - DO NOT TRACK
+DKM-PDFs/
+PDFs/
+results/
+example/pdf-documents/
+example/.mini_rag_index/
+
+# Git backup
+.git.backup-*/

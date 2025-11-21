@@ -1,0 +1,17 @@
+langchain>=0.2.0
+langchain-community>=0.2.0
+langchain-openai>=0.1.0
+faiss-cpu>=1.7.4
+pypdf>=4.2.0
+tqdm>=4.66.0
+python-dotenv>=1.0.0
+rich>=13.7.0
+colorama>=0.4.6
+fpdf2>=2.7.9
+
+# PDF Text Converter dependencies
+paddleocr>=2.7.0
+pdf2image>=1.16.3
+
+# Optional newer interface (can be installed later)
+# langchain-huggingface>=0.0.1

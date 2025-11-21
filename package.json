@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "bpmn-in-color-moddle": "^0.2.0",
+    "puppeteer": "^24.29.0"
+  }
+}

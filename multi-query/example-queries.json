@@ -1,0 +1,11 @@
+{
+  "queries": [
+    "What is SOLID principle?",
+    "Explain clean code practices",
+    "What are Laravel best practices?"
+  ],
+  "external_sources": [
+    "/home/fong/Projects/RAGs/laravel-books",
+    "/home/fong/Projects/RAGs/nasa-google-cleancode"
+  ]
+}

@@ -1,25 +1,28 @@
 #!/usr/bin/env bash
 # Extract Table of Contents from PDFs with heuristics and caching.
-# Usage: extract-toc-muc-luc.sh [pdf_directory] (defaults to /home/fong/Projects/mini-rag/DKM-PDFs)
+# Usage: extract-toc-muc-luc.sh [pdf_directory] (defaults to $DKM_PDF_PATH)
 # Env:
 #   MAX_FILES=N        limit processed files (testing)
 #   RUN_TS=YYYYmmdd-HHMMSS  override run timestamp for log name
 #   FORCE=1            re-generate even if cache exists
 set -euo pipefail
 
-ROOT="/home/fong/Projects/mini-rag"
-LOG_DIR="$ROOT/logs"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Load environment from .env (portable)
+source "$SCRIPT_DIR/../load-env.sh"
+
+LOG_DIR="${LOG_DIR:-$RAGON_ROOT/logs}"
 mkdir -p "$LOG_DIR"
 RUN_TS="${RUN_TS:-$(date -u +%Y%m%d-%H%M%S)}"
 LOG_FILE="$LOG_DIR/extract-toc-$RUN_TS.log"
 log() { printf '%s %s\n' "$(date -u +%FT%TZ)" "$*" | tee -a "$LOG_FILE" >&2; }
 
-DEFAULT_DIR="/home/fong/Projects/mini-rag/DKM-PDFs"
 # If arg provided use it; otherwise default to DKM-PDFs
 if [ $# -ge 1 ]; then
   PDF_DIR="$1"
 else
-  PDF_DIR="$DEFAULT_DIR"
+  PDF_DIR="$DKM_PDF_PATH"
 fi
 [ -d "$PDF_DIR" ] || { echo "Directory not found: $PDF_DIR" >&2; exit 1; }
 

@@ -1,4 +1,4 @@
-"""Standalone vectorstore loader for multi-query (no minirag dependency)"""
+"""Standalone vectorstore loader for multi-query (no ragon dependency)"""
 from __future__ import annotations
 from pathlib import Path
 from typing import Any
@@ -16,10 +16,10 @@ except ImportError:
 # Now safe to import FAISS
 from langchain_community.vectorstores import FAISS
 
-# Import SharedMemoryCache from minirag package
-MINIRAG_SRC = Path(__file__).parent.parent.parent / "src"
-if str(MINIRAG_SRC) not in sys.path:
-    sys.path.insert(0, str(MINIRAG_SRC))
+# Import SharedMemoryCache from ragon package
+RAGON_SRC = Path(__file__).parent.parent.parent / "src"
+if str(RAGON_SRC) not in sys.path:
+    sys.path.insert(0, str(RAGON_SRC))
 
 from minirag.shm_cache import SharedMemoryCache
 
@@ -42,7 +42,7 @@ def get_embeddings_standalone() -> Any:
 
 def load_vectorstore_from_path(source_path: str) -> FAISS:
     """
-    Load FAISS vectorstore from path with /dev/shm/ cache (standalone).
+    Load FAISS vectorstore from path with /tmp/ cache (standalone).
     Supports 2 formats:
     1. Hash-based: <hash>/index.faiss (DKM-PDFs trained format)
     2. Traditional: <path>/.mini_rag_index/index.faiss (test-pdf format)
@@ -98,7 +98,7 @@ def load_vectorstore_from_path(source_path: str) -> FAISS:
         allow_dangerous_deserialization=True
     )
 
-    # ── NEW: Save to /dev/shm/ cache ──
+    # ── NEW: Save to /tmp/ cache ──
     cache.save(store)
 
     return store

@@ -7,12 +7,34 @@ Automatically detects if PDF has text layer:
 
 Usage:
     ./main-convert-scanned-pdf-text-pdf-bbe98f8c8221.sh [input.pdf|folder]
-    Default folder: /home/fong/Projects/mini-rag/PDFs/scanned/
+    Default folder: $RAGON_ROOT/PDFs/scanned/
 """
 from __future__ import annotations
 import sys
+import os
 import ocrmypdf
 from pathlib import Path
+
+
+def _load_env_from_ragon_root() -> None:
+    """Load .env from RAGON_ROOT."""
+    current = Path(__file__).resolve().parent
+    for _ in range(3):
+        env_file = current / ".env"
+        if env_file.exists():
+            with open(env_file, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith("#"):
+                        continue
+                    if "=" in line:
+                        key, _, value = line.partition("=")
+                        os.environ.setdefault(key.strip(), value.strip().strip('"'))
+            break
+        current = current.parent
+
+
+_load_env_from_ragon_root()
 from pypdf import PdfReader, PdfWriter
 import tempfile
 import time
@@ -365,7 +387,8 @@ def main():
     logger = setup_logging(log_dir=str(Path(__file__).parent / "logs"))
 
     # Default folder if no argument provided
-    default_folder = Path("/home/fong/Projects/mini-rag/PDFs/scanned")
+    RAGON_ROOT = os.getenv("RAGON_ROOT", "")
+    default_folder = Path(RAGON_ROOT) / "PDFs" / "scanned" if RAGON_ROOT else Path("PDFs/scanned")
 
     try:
         if len(sys.argv) < 2:

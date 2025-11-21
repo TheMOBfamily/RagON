@@ -1,5 +1,11 @@
 #!/bin/bash
-cd /home/fong/Dropbox/PDFs/NewBooks/
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Load environment from .env (portable)
+source "$SCRIPT_DIR/../load-env.sh"
+
+cd "$DROPBOX_PDF_PATH/NewBooks/" || exit 1
 
 # 1. An Overview... -> Unknown (Safety first)
 mv "An Overview of Practical Time Series Forecasting Using Python Forecast AirQuality Using Algorithms Like SARIMAX (Aditya Kaushal [Kaushal, Aditya]) (Z-Library).pdf" "Unknown-An-Overview-of-Practical-Time-Series-Forecasting-Using-Python-Aditya-Kaushal.PDF"

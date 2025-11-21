@@ -3,13 +3,35 @@
 Check PDFs in Downloads against DKM-PDFs by filename matching.
 """
 
+from __future__ import annotations
 import os
 import re
 import subprocess
 from pathlib import Path
 
-DOWNLOADS_DIR = Path("/home/fong/Downloads")
-DKM_PDFS_DIR = Path("/home/fong/Projects/mini-rag/DKM-PDFs")
+
+def _load_env_from_ragon_root() -> None:
+    """Load .env from RAGON_ROOT."""
+    current = Path(__file__).resolve().parent
+    for _ in range(3):
+        env_file = current / ".env"
+        if env_file.exists():
+            with open(env_file, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith("#"):
+                        continue
+                    if "=" in line:
+                        key, _, value = line.partition("=")
+                        os.environ.setdefault(key.strip(), value.strip().strip('"'))
+            break
+        current = current.parent
+
+
+_load_env_from_ragon_root()
+
+DOWNLOADS_DIR = Path(os.getenv("DOWNLOADS_DIR", str(Path.home() / "Downloads")))
+DKM_PDFS_DIR = Path(os.getenv("DKM_PDF_PATH", "DKM-PDFs"))
 
 def extract_author_and_title(filename):
     """Extract author name and core title from filename."""
@@ -92,7 +114,8 @@ def main():
             print(f"  - {f}")
 
     # Save not_found list to file
-    output_file = Path("/home/fong/Projects/mini-rag/pdfs-to-move.txt")
+    RAGON_ROOT = os.getenv("RAGON_ROOT", "")
+    output_file = Path(RAGON_ROOT) / "pdfs-to-move.txt" if RAGON_ROOT else Path("pdfs-to-move.txt")
     with open(output_file, 'w') as f:
         for filename in not_found:
             f.write(f"{filename}\n")

@@ -1,7 +1,29 @@
 from __future__ import annotations
 import os
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import List
+
+
+def _load_env_from_ragon_root() -> None:
+    """Load .env from RAGON_ROOT."""
+    current = Path(__file__).resolve().parent
+    for _ in range(5):
+        env_file = current / ".env"
+        if env_file.exists():
+            with open(env_file, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith("#"):
+                        continue
+                    if "=" in line:
+                        key, _, value = line.partition("=")
+                        os.environ.setdefault(key.strip(), value.strip().strip('"'))
+            break
+        current = current.parent
+
+
+_load_env_from_ragon_root()
 
 
 def getenv_int(name: str, default: int) -> int:
@@ -22,15 +44,14 @@ class Settings:
     top_k: int = getenv_int("TOP_K", 5)  # Changed from 4 to 5 based on Perplexity research (2025-10-26)
 
     # Directories that should NEVER be rebuilt (read-only mode)
-    no_train_dirs: List[str] = field(default_factory=lambda: [
-        "/home/fong/Projects/mini-rag/DKM-PDFs",
-    ])
+    # TEMPORARILY EMPTY to allow initial build
+    no_train_dirs: List[str] = field(default_factory=lambda: [])
 
-    # Shared Memory Cache Settings (/dev/shm/)
+    # Shared Memory Cache Settings (/tmp/)
     # Best practices from DKM research + industry standards
     cache_enabled: bool = os.getenv("CACHE_ENABLED", "true").lower() == "true"
     cache_ttl_hours: int = getenv_int("CACHE_TTL_HOURS", 24)  # 24h = balance freshness & performance
-    cache_safe_threshold_percent: int = getenv_int("CACHE_SAFE_THRESHOLD_PERCENT", 80)  # Use max 80% of /dev/shm/ (20% buffer)
+    cache_safe_threshold_percent: int = getenv_int("CACHE_SAFE_THRESHOLD_PERCENT", 80)  # Use max 80% of /tmp/ (20% buffer)
     cache_min_free_space_mb: int = getenv_int("CACHE_MIN_FREE_SPACE_MB", 500)  # Keep minimum 500MB free
 
     def validate(self) -> None:

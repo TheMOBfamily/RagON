@@ -1,6 +1,28 @@
 from __future__ import annotations
 import os
 from dataclasses import dataclass
+from pathlib import Path
+
+
+def _load_env_from_ragon_root() -> None:
+    """Load .env from RAGON_ROOT (portable)."""
+    current = Path(__file__).resolve().parent
+    for _ in range(3):
+        env_file = current / ".env"
+        if env_file.exists():
+            with open(env_file, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith("#"):
+                        continue
+                    if "=" in line:
+                        key, _, value = line.partition("=")
+                        os.environ.setdefault(key.strip(), value.strip().strip('"'))
+            break
+        current = current.parent
+
+
+_load_env_from_ragon_root()
 
 
 def getenv_int(name: str, default: int) -> int:
@@ -20,11 +42,11 @@ class TrainSettings:
     chunk_overlap: int = getenv_int("CHUNK_OVERLAP", 150)
     pdf_dir: str = os.getenv(
         "TRAIN_PDF_DIR",
-        "/home/fong/Projects/mini-rag/DKM-PDFs"
+        os.getenv("DKM_PDF_PATH", "")
     )
     cache_dir: str = os.getenv(
         "TRAIN_CACHE_DIR",
-        "/home/fong/Projects/mini-rag/DKM-PDFs"
+        os.getenv("DKM_PDF_PATH", "")
     )
 
     def validate(self) -> None:

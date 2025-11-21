@@ -1,8 +1,27 @@
 #!/usr/bin/env python3
 """Batch convert PDFs to text and then to new PDFs with 'text-*' prefix."""
 
+import os
 import subprocess
 from pathlib import Path
+
+# Load .env from RagON root
+def _load_env():
+    current = Path(__file__).resolve().parent
+    for _ in range(4):
+        env_file = current / ".env"
+        if env_file.exists():
+            with open(env_file, "r") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, _, v = line.partition("=")
+                        os.environ.setdefault(k.strip(), v.strip().strip('"'))
+            break
+        current = current.parent
+
+_load_env()
+RAGON_ROOT = os.getenv("RAGON_ROOT", "/home/fong/Projects/RagON")
 from fpdf import FPDF
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
@@ -99,11 +118,12 @@ def convert_text_to_pdf(text_path: Path) -> Path:
 
 
 def main():
-    # List of PDFs to process
+    # List of PDFs to process (using env var)
+    pdf_dir = Path(RAGON_ROOT) / "PDFs"
     pdf_files = [
-        Path("/home/fong/Projects/mini-rag/PDFs/2019-Hands-On-Machine-Learning-with-Scikit-Learn-Keras-and-TensorFlow_-Concepts-Tools-and-Techniques-to-Build-Intelligent-Systems-Aurélien-Géron-OReilly.PDF"),
-        Path("/home/fong/Projects/mini-rag/PDFs/2022-Natural-Language-Processing-with-Transformers_-Building-Language-Applications-with-Hugging-Face-Lewis-Tunstall-Leandro-von-Werra-Thomas-Wolf.PDF"),
-        Path("/home/fong/Projects/mini-rag/PDFs/2023-Generative-Deep-Learning_-Teaching-Machines-To-Paint-Write-Compose-and-Play-David-Foster-OReilly.PDF"),
+        pdf_dir / "2019-Hands-On-Machine-Learning-with-Scikit-Learn-Keras-and-TensorFlow_-Concepts-Tools-and-Techniques-to-Build-Intelligent-Systems-Aurélien-Géron-OReilly.PDF",
+        pdf_dir / "2022-Natural-Language-Processing-with-Transformers_-Building-Language-Applications-with-Hugging-Face-Lewis-Tunstall-Leandro-von-Werra-Thomas-Wolf.PDF",
+        pdf_dir / "2023-Generative-Deep-Learning_-Teaching-Machines-To-Paint-Write-Compose-and-Play-David-Foster-OReilly.PDF",
     ]
 
     console.print("\n[bold cyan]Batch PDF to Text to PDF Conversion[/bold cyan]")

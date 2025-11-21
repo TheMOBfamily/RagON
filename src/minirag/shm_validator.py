@@ -11,7 +11,7 @@ import shutil
 from datetime import datetime, timedelta
 from typing import Dict
 
-SHM_DIR = Path("/dev/shm")
+SHM_DIR = Path("/tmp")
 
 
 def check_ttl(meta: Dict, ttl_hours: int) -> bool:
@@ -49,7 +49,7 @@ def check_space_available(
     threshold_percent: int = 80,
     min_free_mb: int = 500
 ) -> bool:
-    """Check if /dev/shm/ has safe space available.
+    """Check if /tmp/ has safe space available.
 
     Best practices from DKM research:
     - Use max 80% of total space (20% buffer)
@@ -72,13 +72,13 @@ def check_space_available(
         # Check 1: Don't exceed threshold
         usage_percent = (used / total) * 100
         if usage_percent > threshold_percent:
-            print(f"⚠️  /dev/shm/ usage {usage_percent:.1f}% > {threshold_percent}% threshold")
+            print(f"⚠️  /tmp/ usage {usage_percent:.1f}% > {threshold_percent}% threshold")
             return False
 
         # Check 2: Keep minimum free space
         free_mb = free / (1024 * 1024)
         if free_mb < min_free_mb:
-            print(f"⚠️  /dev/shm/ free {free_mb:.1f}MB < {min_free_mb}MB minimum")
+            print(f"⚠️  /tmp/ free {free_mb:.1f}MB < {min_free_mb}MB minimum")
             return False
 
         # Check 3: Can fit required bytes?

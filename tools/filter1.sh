@@ -4,10 +4,15 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Load environment from .env (portable)
+source "$SCRIPT_DIR/../load-env.sh"
+
 usage() {
   echo "Usage: $0 <folder> [dkm_folder]"
   echo "  <folder>: Source folder containing PDFs/ebooks"
-  echo "  [dkm_folder]: Defaults to /home/fong/Projects/mini-rag/DKM-PDFs"
+  echo "  [dkm_folder]: Defaults to \$DKM_PDF_PATH ($DKM_PDF_PATH)"
 }
 
 die() {
@@ -18,7 +23,7 @@ die() {
 [ $# -ge 1 ] || { usage; exit 1; }
 
 TARGET_DIR="${1%/}"
-DKM_DIR="${2:-/home/fong/Projects/mini-rag/DKM-PDFs}"
+DKM_DIR="${2:-$DKM_PDF_PATH}"
 
 SKIP_ALREADY_EXISTS=0
 [ -d "$TARGET_DIR" ] || die "Target folder not found: $TARGET_DIR"
@@ -28,7 +33,7 @@ if ! command -v ebook-convert >/dev/null 2>&1; then
   die "ebook-convert (Calibre CLI) is required. Install Calibre before running filter1."
 fi
 
-LOG_DIR="/home/fong/Projects/mini-rag/logs"
+LOG_DIR="${LOG_DIR:-$RAGON_ROOT/logs}"
 mkdir -p "$LOG_DIR"
 LOG_FILE="$LOG_DIR/filter1-$(date +%Y%m%d-%H%M%S).log"
 exec > >(tee -a "$LOG_FILE") 2>&1

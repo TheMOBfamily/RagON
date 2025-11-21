@@ -1,7 +1,12 @@
 #!/bin/bash
 # Find duplicate PDF files by MD5 hash
 
-cd /home/fong/Projects/mini-rag/DKM-PDFs || exit
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Load environment from .env (portable)
+source "$SCRIPT_DIR/../load-env.sh"
+
+cd "$DKM_PDF_PATH" || exit
 
 echo "Finding duplicate files..."
 echo

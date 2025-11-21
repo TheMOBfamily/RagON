@@ -7,8 +7,13 @@
 
 set -euo pipefail
 
-NEW_FOLDER="/home/fong/Dropbox/PDFs/new"
-DKM_FOLDER="/home/fong/Projects/mini-rag/DKM-PDFs"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Load environment from .env (portable)
+source "$SCRIPT_DIR/../load-env.sh"
+
+NEW_FOLDER="${1:-$DROPBOX_PDF_PATH/new}"
+DKM_FOLDER="${2:-$DKM_PDF_PATH}"
 REPORT_FILE="/tmp/new-books-report.txt"
 
 echo "🔍 Comparing new books with DKM-PDFs collection..."
@@ -140,5 +145,5 @@ echo ""
 echo "Next steps:"
 echo "  1. Review potential duplicates manually (compare first page)"
 echo "  2. Copy truly new books to DKM-PDFs:"
-echo "     cp /home/fong/Dropbox/PDFs/new/YYYY-*.PDF /home/fong/Projects/mini-rag/DKM-PDFs/"
-echo "  3. Commit changes: cd /home/fong/Projects/mini-rag && git add DKM-PDFs/ && git commit"
+echo "     cp $NEW_FOLDER/YYYY-*.PDF $DKM_FOLDER/"
+echo "  3. Commit changes: cd $RAGON_ROOT && git add DKM-PDFs/ && git commit"

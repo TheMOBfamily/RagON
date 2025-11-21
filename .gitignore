@@ -77,3 +77,4 @@ example/.mini_rag_index/
 
 # Git backup
 .git.backup-*/
+.fong/

@@ -25,13 +25,38 @@ from dataclasses import dataclass
 from pypdf import PdfReader
 from fpdf import FPDF
 
-# Enforce venv execution
+# Load environment from .env (portable)
 import os, sys
-VENV_PY = "/home/fong/Projects/mini-rag/venv/bin/python"
-if os.path.exists(VENV_PY) and os.path.realpath(sys.executable) != os.path.realpath(VENV_PY):
+from pathlib import Path
+
+
+def _load_env_from_ragon_root() -> None:
+    """Load .env from RAGON_ROOT."""
+    current = Path(__file__).resolve().parent
+    for _ in range(3):
+        env_file = current / ".env"
+        if env_file.exists():
+            with open(env_file, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith("#"):
+                        continue
+                    if "=" in line:
+                        key, _, value = line.partition("=")
+                        os.environ.setdefault(key.strip(), value.strip().strip('"'))
+            break
+        current = current.parent
+
+
+_load_env_from_ragon_root()
+
+VENV_PATH = os.getenv("VENV_PATH", "")
+VENV_PY = f"{VENV_PATH}/bin/python" if VENV_PATH else ""
+if VENV_PY and os.path.exists(VENV_PY) and os.path.realpath(sys.executable) != os.path.realpath(VENV_PY):
     os.execv(VENV_PY, [VENV_PY, __file__, *sys.argv[1:]])
 
-ROOT = Path(__file__).resolve().parent.parent / "DKM-PDFs"
+DKM_PDF_PATH = os.getenv("DKM_PDF_PATH", "")
+ROOT = Path(DKM_PDF_PATH) if DKM_PDF_PATH else Path(__file__).resolve().parent.parent / "DKM-PDFs"
 MANIFEST_PATH = ROOT / "toc_manifest.json"
 PAGES_SCAN = 30  # pages to scan for regex extraction (expanded from 12)
 

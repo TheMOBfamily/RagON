@@ -9,8 +9,8 @@ Usage:
     # Basic usage (threshold 80%)
     source venv/bin/activate
     python tools/compare-pdfs-fuzzy.py \\
-        --source /home/fong/Dropbox/_tmp/book-files-report-verified \\
-        --dest /home/fong/Projects/mini-rag/DKM-PDFs
+        --source /path/to/source/folder \\
+        --dest $DKM_PDF_PATH
 
     # Custom threshold (85%)
     python tools/compare-pdfs-fuzzy.py \\

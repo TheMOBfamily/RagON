@@ -5,15 +5,12 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-VENV_PATH="/home/fong/Projects/mini-rag/venv"
+
+# Load environment from .env (portable)
+source "$SCRIPT_DIR/../load-env.sh"
 
 # Activate venv
-if [ ! -d "$VENV_PATH" ]; then
-    echo "Error: venv not found at $VENV_PATH"
-    exit 1
-fi
-
-source "$VENV_PATH/bin/activate"
+activate_venv || exit 1
 
 # Run main script
 cd "$SCRIPT_DIR"

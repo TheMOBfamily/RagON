@@ -12,12 +12,13 @@ import pickle
 from datetime import datetime
 from typing import Optional, Any
 
-SHM_DIR = Path("/dev/shm")
+# Use /tmp instead of /dev/shm (avoid RAM disk full issues)
+SHM_DIR = Path("/tmp")
 CACHE_PREFIX = "minirag_faiss"
 
 
 class SharedMemoryCache:
-    """Linux /dev/shm/ cache for FAISS vector store."""
+    """Linux /tmp/ cache for FAISS vector store."""
 
     def __init__(self, pdf_dir: str):
         from .config import get_settings
@@ -64,7 +65,7 @@ class SharedMemoryCache:
         return True
 
     def save(self, faiss_index: Any) -> None:
-        """Save FAISS index to /dev/shm/"""
+        """Save FAISS index to /tmp/"""
         if not self.settings.cache_enabled:
             return
 
@@ -81,15 +82,15 @@ class SharedMemoryCache:
             with open(self.meta_path, 'wb') as f:
                 pickle.dump(meta, f)
 
-            print(f"💾 Cached to /dev/shm/ (key: {self.cache_key})")
+            print(f"💾 Cached to /tmp/ (key: {self.cache_key})")
 
         except OSError as e:
-            print(f"⚠️  /dev/shm/ full or unavailable: {e}")
+            print(f"⚠️  /tmp/ full or unavailable: {e}")
         except Exception as e:
             print(f"⚠️  Cache save failed: {e}")
 
     def load(self) -> Optional[Any]:
-        """Load FAISS index from /dev/shm/"""
+        """Load FAISS index from /tmp/"""
         if not self.is_cached():
             return None
 

@@ -87,7 +87,7 @@ def create_text_pdf_from_text(text: str, original_name: str = "") -> Optional[Pa
         # Set metadata
         pdf.set_title(f"Text Version: {original_name}")
         pdf.set_author("PDF Text Converter")
-        pdf.set_creator("mini-rag/pdf-text-converter")
+        pdf.set_creator("RagON/pdf-text-converter")
         
         pdf.add_page()
         pdf.set_font("Arial", size=10)

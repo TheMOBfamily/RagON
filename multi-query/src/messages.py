@@ -1,11 +1,14 @@
 # Centralized notices/messages for multi-query tools
+import os
+
+_DKM_PATH = os.getenv("DKM_PDF_PATH", "$DKM_PDF_PATH")
 
 THINK_ULTRA_NOTICE = (
     "Activate Think Ultra (deep analytical mode) and select up to nine books from the\n"
     "list that are most relevant to the current problem.\n"
     "\n"
     "CRITICAL: Each book has a pre-generated knowledge index available at:\n"
-    "  /home/fong/Projects/mini-rag/DKM-PDFs/<file_hash>/index-toc.json\n"
+    f"  {_DKM_PATH}/<file_hash>/index-toc.json\n"
     "\n"
     "This index contains:\n"
     "  • Complete table of contents (with page numbers)\n"

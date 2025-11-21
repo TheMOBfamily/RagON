@@ -10,9 +10,9 @@ from rich.console import Console
 # Setup path
 PROJECT_ROOT = Path(__file__).parent.parent
 SRC_PATH = Path(__file__).parent / "src"
-MINIRAG_SRC = PROJECT_ROOT / "src"
+RAGON_SRC = PROJECT_ROOT / "src"
 
-for path in [SRC_PATH, MINIRAG_SRC]:
+for path in [SRC_PATH, RAGON_SRC]:
     if str(path) not in sys.path:
         sys.path.insert(0, str(path))
 
@@ -45,8 +45,8 @@ JSON Format:
     "What are Laravel best practices?"
   ],
   "external_sources": [
-    "/home/fong/Projects/RAGs/laravel-books",
-    "/home/fong/Projects/RAGs/nasa-google-cleancode"
+    "/path/to/external/rag/folder1",
+    "/path/to/external/rag/folder2"
   ]
 }
 
@@ -68,7 +68,7 @@ Usage Examples:
      %(prog)s --json '{"queries":["Q1"],"external_sources":["/path/to/rag"]}'
 
   6. Query with JSON file (absolute path):
-     %(prog)s --json-file /home/fong/Projects/mini-rag/multi-query/example-queries.json
+     %(prog)s --json-file $RAGON_ROOT/multi-query/example-queries.json
 
   7. List sources including external in discovery order:
      %(prog)s --json-file example-queries.json --list-sources --no-sort

@@ -379,10 +379,10 @@ def main():
         epilog="""
 Examples:
   # Dry-run (safe - no changes)
-  python tools/deduplicate-dkm-pdfs.py --dir /home/fong/Projects/mini-rag/DKM-PDFs
-  
+  python tools/deduplicate-dkm-pdfs.py --dir /home/fong/Projects/RagON/DKM-PDFs
+
   # Execute deduplication
-  python tools/deduplicate-dkm-pdfs.py --dir /home/fong/Projects/mini-rag/DKM-PDFs --execute
+  python tools/deduplicate-dkm-pdfs.py --dir /home/fong/Projects/RagON/DKM-PDFs --execute
   
   # Custom threshold
   python tools/deduplicate-dkm-pdfs.py --dir /path/to/DKM-PDFs --threshold 0.90

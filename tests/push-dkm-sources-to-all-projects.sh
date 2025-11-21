@@ -5,6 +5,10 @@
 
 set -euo pipefail
 
+# Load environment
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../load-env.sh"
+
 # Colors
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -12,8 +16,8 @@ RED='\033[0;31m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Source file
-SOURCE_FILE="/home/fong/Projects/mini-rag/.fong/instructions/instructions-dkm-sources-knowledgebase.md"
+# Source file (from env)
+SOURCE_FILE="${RAGON_ROOT}/.fong/instructions/instructions-dkm-sources-knowledgebase.md"
 
 # Verify source file exists
 if [ ! -f "$SOURCE_FILE" ]; then
@@ -31,9 +35,10 @@ echo -e "${GREEN}Size: $(ls -lh "$SOURCE_FILE" | awk '{print $5}')${NC}"
 echo -e "${GREEN}Lines: $(wc -l < "$SOURCE_FILE")${NC}"
 echo ""
 
-# Dynamic discovery
+# Dynamic discovery (PROJECTS_BASE from env, defaults to parent of RAGON_ROOT)
+PROJECTS_BASE="${PROJECTS_BASE:-$(dirname "$RAGON_ROOT")}"
 echo -e "${YELLOW}Discovering projects with .fong directory...${NC}"
-FONG_DIRS=($(find /home/fong/Projects -maxdepth 2 -name ".fong" -type d 2>/dev/null | sort))
+FONG_DIRS=($(find "$PROJECTS_BASE" -maxdepth 2 -name ".fong" -type d 2>/dev/null | sort))
 
 echo -e "${GREEN}Found ${#FONG_DIRS[@]} projects${NC}"
 echo ""
@@ -59,7 +64,7 @@ for FONG_DIR in "${FONG_DIRS[@]}"; do
         echo -e "${YELLOW}  Created: $TARGET_DIR${NC}"
     fi
 
-    # Skip if source is same as target (mini-rag itself)
+    # Skip if source is same as target (RagON itself)
     if [ "$SOURCE_FILE" == "$TARGET_FILE" ]; then
         echo -e "${YELLOW}[$TOTAL/${#FONG_DIRS[@]}] SKIP (source): $PROJECT_NAME${NC}"
         SKIPPED=$((SKIPPED + 1))

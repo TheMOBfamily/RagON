@@ -1,4 +1,4 @@
-"""mini-rag package initialization."""
+"""RagON package initialization."""
 __all__ = [
     "config",
     "loader",

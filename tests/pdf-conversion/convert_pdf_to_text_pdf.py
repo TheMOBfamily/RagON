@@ -1,8 +1,27 @@
 #!/usr/bin/env python3
 """Convert PDF to text and then to new PDF with text-* prefix."""
 
+import os
 import sys
 from pathlib import Path
+
+# Load .env from RagON root
+def _load_env():
+    current = Path(__file__).resolve().parent
+    for _ in range(4):
+        env_file = current / ".env"
+        if env_file.exists():
+            with open(env_file, "r") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, _, v = line.partition("=")
+                        os.environ.setdefault(k.strip(), v.strip().strip('"'))
+            break
+        current = current.parent
+
+_load_env()
+RAGON_ROOT = os.getenv("RAGON_ROOT", "/home/fong/Projects/RagON")
 from pypdf import PdfReader
 from fpdf import FPDF
 from rich.console import Console
@@ -85,7 +104,9 @@ def convert_text_to_pdf(text: str, output_path: Path) -> None:
 
 
 def main():
-    source_pdf = Path("/home/fong/Projects/mini-rag/PDFs/2018-Reinforcement-Learning_-An-Introduction-Adaptive-Computation-and-Machine-Learning-Richard-S-Sutton_-Andrew-G-Barto-MIT-Press.PDF")
+    # Use env var for path
+    pdf_dir = Path(RAGON_ROOT) / "PDFs"
+    source_pdf = pdf_dir / "2018-Reinforcement-Learning_-An-Introduction-Adaptive-Computation-and-Machine-Learning-Richard-S-Sutton_-Andrew-G-Barto-MIT-Press.PDF"
 
     if not source_pdf.exists():
         console.print(f"[red]Error: Source PDF not found: {source_pdf}[/red]")

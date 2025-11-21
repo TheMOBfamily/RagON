@@ -1,8 +1,27 @@
 #!/usr/bin/env python3
 """Convert text file to PDF using fpdf2."""
 
+import os
 import re
 from pathlib import Path
+
+# Load .env from RagON root
+def _load_env():
+    current = Path(__file__).resolve().parent
+    for _ in range(4):
+        env_file = current / ".env"
+        if env_file.exists():
+            with open(env_file, "r") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, _, v = line.partition("=")
+                        os.environ.setdefault(k.strip(), v.strip().strip('"'))
+            break
+        current = current.parent
+
+_load_env()
+RAGON_ROOT = os.getenv("RAGON_ROOT", "/home/fong/Projects/RagON")
 from fpdf import FPDF
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
@@ -86,7 +105,9 @@ def convert_text_to_pdf(text_path: Path, pdf_path: Path) -> None:
 
 
 def main():
-    txt_file = Path("/home/fong/Projects/mini-rag/PDFs/2018-Reinforcement-Learning_-An-Introduction-Adaptive-Computation-and-Machine-Learning-Richard-S-Sutton_-Andrew-G-Barto-MIT-Press.txt")
+    # Use env var for path
+    pdf_dir = Path(RAGON_ROOT) / "PDFs"
+    txt_file = pdf_dir / "2018-Reinforcement-Learning_-An-Introduction-Adaptive-Computation-and-Machine-Learning-Richard-S-Sutton_-Andrew-G-Barto-MIT-Press.txt"
 
     if not txt_file.exists():
         console.print(f"[red]Error: Text file not found: {txt_file}[/red]")

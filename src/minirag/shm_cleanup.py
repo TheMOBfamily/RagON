@@ -1,6 +1,6 @@
 """Shared Memory Cache Cleanup & Stats
 
-Maintenance operations for /dev/shm/ cache.
+Maintenance operations for /tmp/ cache.
 Separated for SRP (Single Responsibility Principle).
 """
 
@@ -10,7 +10,7 @@ from pathlib import Path
 import shutil
 from typing import Dict
 
-SHM_DIR = Path("/dev/shm")
+SHM_DIR = Path("/tmp")
 CACHE_PREFIX = "minirag_faiss"
 
 
@@ -44,7 +44,7 @@ def cleanup_old_caches(max_age_hours: int = 24) -> int:
 
 
 def get_cache_stats() -> Dict:
-    """Get statistics about /dev/shm/ cache usage.
+    """Get statistics about /tmp/ cache usage.
 
     Returns:
         Dict with cache stats (count, total_size_mb, shm_usage_percent, etc.)
@@ -74,7 +74,7 @@ def get_cache_stats() -> Dict:
 
 
 def clear_all_caches() -> int:
-    """Clear ALL minirag caches from /dev/shm/.
+    """Clear ALL minirag caches from /tmp/.
 
     WARNING: Destructive operation!
 

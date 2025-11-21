@@ -1,5 +1,5 @@
 #!/bin/bash
-# Training script for mini-rag with hash-based caching
+# Training script for RagON with hash-based caching
 # Usage: ./main-train-352179ea6e15.sh [options]
 
 set -e

@@ -8,14 +8,37 @@ Date: 2025-10-26
 LOC: ~40 (< 100)
 """
 from __future__ import annotations
+import os
 from pathlib import Path
 
+
+def _load_env_from_ragon_root() -> None:
+    """Load .env from RAGON_ROOT (portable)."""
+    current = Path(__file__).resolve().parent
+    for _ in range(4):  # Search up to 4 levels
+        env_file = current / ".env"
+        if env_file.exists():
+            with open(env_file, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith("#"):
+                        continue
+                    if "=" in line:
+                        key, _, value = line.partition("=")
+                        os.environ.setdefault(key.strip(), value.strip().strip('"'))
+            break
+        current = current.parent
+
+
+_load_env_from_ragon_root()
+
+
 # Project root
-PROJECT_ROOT = Path(__file__).parent.parent.parent
+PROJECT_ROOT = Path(os.getenv("RAGON_ROOT", Path(__file__).parent.parent.parent))
 
 # Source directories
 MULTI_QUERY_SRC = PROJECT_ROOT / "multi-query" / "src"
-DKM_PDFS_DIR = PROJECT_ROOT / "DKM-PDFs"
+DKM_PDFS_DIR = Path(os.getenv("DKM_PDF_PATH", PROJECT_ROOT / "DKM-PDFs"))
 
 # Output directories
 MERGED_INDEX_DIR = DKM_PDFS_DIR / ".mini_rag_index"

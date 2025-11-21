@@ -5,6 +5,10 @@
 
 set -euo pipefail
 
+# Load environment
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../load-env.sh"
+
 # Colors
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -19,7 +23,7 @@ echo -e "${BLUE}╚════════════════════�
 echo ""
 
 # Commit message
-COMMIT_MSG="docs: Sync instructions-dkm-sources-knowledgebase from mini-rag
+COMMIT_MSG="docs: Sync instructions-dkm-sources-knowledgebase from RagON
 
 Add comprehensive knowledge sources map:
 - Internet Research: Perplexity AI, ArXiv, Gemini 2.5 Pro (MCP)
@@ -28,15 +32,16 @@ Add comprehensive knowledge sources map:
 - Notion Knowledge Base (MCP)
 - Obsidian Personal Notes
 
-Source: /home/fong/Projects/mini-rag/.fong/instructions/
+Source: ${RAGON_ROOT}/.fong/instructions/
 Pushed via: instructions-push-pull-boiler-plate.md
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
 Co-Authored-By: Claude <noreply@anthropic.com>"
 
-# Dynamic discovery
-FONG_DIRS=($(find /home/fong/Projects -maxdepth 2 -name ".fong" -type d 2>/dev/null | sort))
+# Dynamic discovery (PROJECTS_BASE from env)
+PROJECTS_BASE="${PROJECTS_BASE:-$(dirname "$RAGON_ROOT")}"
+FONG_DIRS=($(find "$PROJECTS_BASE" -maxdepth 2 -name ".fong" -type d 2>/dev/null | sort))
 
 # Counters
 TOTAL=0
@@ -97,7 +102,7 @@ for FONG_DIR in "${FONG_DIRS[@]}"; do
 done
 
 # Return to original directory
-cd /home/fong/Projects/mini-rag
+cd "$RAGON_ROOT"
 
 # Summary
 echo ""
@@ -113,5 +118,5 @@ echo ""
 if [ $COMMITTED -gt 0 ]; then
     echo -e "${YELLOW}⚠️  Note: Changes are committed but NOT pushed${NC}"
     echo -e "To push all changes, run:"
-    echo -e "  for dir in \$(find /home/fong/Projects -maxdepth 2 -name \".git\" -type d 2>/dev/null | sed 's/\/.git//'); do (cd \$dir && git push); done"
+    echo -e "  for dir in \$(find $PROJECTS_BASE -maxdepth 2 -name \".git\" -type d 2>/dev/null | sed 's/\/.git//'); do (cd \$dir && git push); done"
 fi

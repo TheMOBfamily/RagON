@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Vectorstore loader for merge operations - NO CACHE to /dev/shm/
+Vectorstore loader for merge operations - NO CACHE (direct disk load)
 
 Author: AI Assistant
 Date: 2025-11-20
@@ -41,7 +41,7 @@ def get_embeddings_no_cache() -> Any:
 
 def load_vectorstore_no_cache(source_path: str) -> FAISS:
     """
-    Load FAISS vectorstore from path WITHOUT /dev/shm/ cache (for merge only).
+    Load FAISS vectorstore from path WITHOUT cache (for merge only).
 
     Supports 2 formats:
     1. Hash-based: <hash>/index.faiss (DKM-PDFs trained format)

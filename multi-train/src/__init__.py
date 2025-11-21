@@ -1,2 +1,2 @@
-"""Training module for mini-rag - hash-based caching system"""
+"""Training module for RagON - hash-based caching system"""
 __version__ = "1.0.0"

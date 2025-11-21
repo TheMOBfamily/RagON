@@ -104,12 +104,12 @@ def build_or_load_vectorstore(pdf_dir: str, force_rebuild: bool = False) -> FAIS
     pdf_path = Path(pdf_dir).resolve()  # Normalize to absolute path
     settings = get_settings()
 
-    # ── NEW: Shared Memory Cache (/dev/shm/) ──
+    # ── NEW: Shared Memory Cache (/tmp/) ──
     # Check cache FIRST - survives process death
     shm_cache = SharedMemoryCache(str(pdf_path))
 
     if not force_rebuild and shm_cache.is_cached():
-        print("🔥 Cache HIT - Loading from /dev/shm/")
+        print("🔥 Cache HIT - Loading from /tmp/")
         cached_index = shm_cache.load()
         if cached_index is not None:
             return cached_index
@@ -144,7 +144,7 @@ def build_or_load_vectorstore(pdf_dir: str, force_rebuild: bool = False) -> FAIS
         print("✅ Using cached vector store (blacklisted directory)")
         store = FAISS.load_local(str(index_path), embeddings, allow_dangerous_deserialization=True)
 
-        # Save to /dev/shm/ for next queries
+        # Save to /tmp/ for next queries
         shm_cache.save(store)
 
         return store
@@ -189,7 +189,7 @@ def build_or_load_vectorstore(pdf_dir: str, force_rebuild: bool = False) -> FAIS
         if faiss_index_file.exists() and store_pkl_file.exists():
             store = FAISS.load_local(str(index_path), embeddings, allow_dangerous_deserialization=True)
 
-            # Save to /dev/shm/ for next queries
+            # Save to /tmp/ for next queries
             shm_cache.save(store)
 
             return store
@@ -202,7 +202,7 @@ def build_or_load_vectorstore(pdf_dir: str, force_rebuild: bool = False) -> FAIS
         print("✅ Using cached vector store")
         store = FAISS.load_local(str(index_path), embeddings, allow_dangerous_deserialization=True)
 
-        # Save to /dev/shm/ for next queries
+        # Save to /tmp/ for next queries
         shm_cache.save(store)
 
         return store
@@ -224,7 +224,7 @@ def build_or_load_vectorstore(pdf_dir: str, force_rebuild: bool = False) -> FAIS
     _write_manifest(manifest_path, current)
     print(f"✅ Vector store saved to {index_path}")
 
-    # Save to /dev/shm/ for next queries
+    # Save to /tmp/ for next queries
     shm_cache.save(store)
 
     return store

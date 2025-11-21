@@ -1,6 +1,6 @@
 #!/bin/bash
-# Mini-RAG Runner Script - RagON API Mode + Legacy Fallback
-# Usage: /home/fong/Projects/mini-rag/run.sh "question" [pdf_path] [--force-rebuild] [--top-k N] [--legacy]
+# RagON Runner Script - RagON API Mode + Legacy Fallback
+# Usage: /home/fong/Projects/RagON/run.sh "question" [pdf_path] [--force-rebuild] [--top-k N] [--legacy]
 
 # Get absolute path to script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -10,7 +10,11 @@ PROJECT_ROOT="$SCRIPT_DIR"
 VENV_PATH="$PROJECT_ROOT/venv"
 MAIN_SCRIPT="$PROJECT_ROOT/main-minirag.py"
 DEFAULT_PDF_PATH="$PROJECT_ROOT/DKM-PDFs"
-RAGON_API_URL="http://localhost:2011"
+# Load RAGON_API_URL from .env (SSOT)
+if [ -f "$PROJECT_ROOT/.env" ]; then
+    export $(grep -E '^RAGON_API_URL=' "$PROJECT_ROOT/.env" | xargs)
+fi
+RAGON_API_URL="${RAGON_API_URL:-http://localhost:1411}"
 
 # Check if venv exists
 if [ ! -d "$VENV_PATH" ]; then
@@ -144,7 +148,8 @@ else
 
         # Start service in background
         cd "$PROJECT_ROOT/RagON"
-        nohup "$PROJECT_ROOT/RagON/Start-RAG-persistent-service.sh" 2011 > /dev/null 2>&1 &
+        RAGON_PORT=$(echo "$RAGON_API_URL" | grep -oP ':\K[0-9]+$' || echo "1411")
+        nohup "$PROJECT_ROOT/RagON/Start-RAG-persistent-service.sh" "$RAGON_PORT" > /dev/null 2>&1 &
 
         # Wait for service to be ready (max 30 seconds)
         echo "⏳ Waiting for service to start..."

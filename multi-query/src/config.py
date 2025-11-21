@@ -1,6 +1,30 @@
 from __future__ import annotations
 import os
 from dataclasses import dataclass
+from pathlib import Path
+
+
+def _load_env_from_ragon_root() -> None:
+    """Load .env from RAGON_ROOT (portable)."""
+    # Find RAGON_ROOT: go up from src/ to multi-query/ to RagON/
+    current = Path(__file__).resolve().parent
+    for _ in range(3):  # Try up to 3 levels
+        env_file = current / ".env"
+        if env_file.exists():
+            with open(env_file, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith("#"):
+                        continue
+                    if "=" in line:
+                        key, _, value = line.partition("=")
+                        os.environ.setdefault(key.strip(), value.strip().strip('"'))
+            break
+        current = current.parent
+
+
+# Load environment on module import
+_load_env_from_ragon_root()
 
 
 def getenv_int(name: str, default: int) -> int:
@@ -14,8 +38,8 @@ def getenv_int(name: str, default: int) -> int:
 class MultiRAGSettings:
     """Settings for multi-source RAG query system"""
     base_rag_dir: str = os.getenv(
-        "MULTI_RAG_BASE_DIR", 
-        "/home/fong/Projects/mini-rag/DKM-PDFs"
+        "MULTI_RAG_BASE_DIR",
+        os.getenv("DKM_PDF_PATH", "")
     )
     max_workers: int = getenv_int("MULTI_RAG_WORKERS", 4)
     # TOP_K configuration

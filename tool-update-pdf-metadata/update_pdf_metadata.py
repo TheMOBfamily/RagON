@@ -10,12 +10,34 @@ Hoặc chạy với file cụ thể:
     python update_pdf_metadata.py <path_to_pdf>
 """
 
+from __future__ import annotations
 import hashlib
 import json
 import os
 import sys
 from pathlib import Path
 from typing import Dict, Optional
+
+
+def _load_env_from_ragon_root() -> None:
+    """Load .env from RAGON_ROOT."""
+    current = Path(__file__).resolve().parent
+    for _ in range(3):
+        env_file = current / ".env"
+        if env_file.exists():
+            with open(env_file, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith("#"):
+                        continue
+                    if "=" in line:
+                        key, _, value = line.partition("=")
+                        os.environ.setdefault(key.strip(), value.strip().strip('"'))
+            break
+        current = current.parent
+
+
+_load_env_from_ragon_root()
 
 
 def calculate_md5(file_path: Path) -> str:
@@ -201,8 +223,9 @@ def process_all_pdfs(base_dir: Path):
 
 def main():
     """Main function"""
-    # Xác định thư mục base - ALWAYS use absolute path
-    base_dir = Path("/home/fong/Projects/mini-rag/DKM-PDFs")
+    # Xác định thư mục base - từ .env
+    DKM_PDF_PATH = os.getenv("DKM_PDF_PATH", "")
+    base_dir = Path(DKM_PDF_PATH) if DKM_PDF_PATH else Path("DKM-PDFs")
 
     print(f"📂 Thư mục làm việc: {base_dir}")
     

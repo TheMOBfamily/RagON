@@ -5,7 +5,6 @@
 # Author: Fong + Claude
 #
 # Usage: bash filter3-dkm-dedup.sh <input-folder>
-# Example: bash filter3-dkm-dedup.sh /home/fong/Dropbox/_tmp/book-files-report-verified
 #
 # Output:
 #   - /tmp/filter3-duplicates.txt (files already in DKM-PDFs)
@@ -13,6 +12,11 @@
 #   - /tmp/filter3-suspicious.txt (need manual check - title similar but not exact match)
 
 set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Load environment from .env (portable)
+source "$SCRIPT_DIR/../load-env.sh"
 
 # Colors
 RED='\033[0;31m'
@@ -23,7 +27,7 @@ NC='\033[0m' # No Color
 
 # Config
 INPUT_FOLDER="${1:-.}"
-DKM_PDFs="/home/fong/Projects/mini-rag/DKM-PDFs"
+DKM_PDFs="$DKM_PDF_PATH"
 REPORT_DIR="/tmp"
 DUPLICATES_FILE="$REPORT_DIR/filter3-duplicates.txt"
 NEW_FILE="$REPORT_DIR/filter3-new.txt"

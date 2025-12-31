@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import List
-from langchain.docstore.document import Document
+from langchain_core.documents import Document
 from .config import get_settings
 
 

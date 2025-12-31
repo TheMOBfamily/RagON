@@ -13,6 +13,11 @@ load_dotenv(ENV_PATH)
 PORT = int(os.getenv("PORT", "1411"))
 HOST = os.getenv("HOST", "0.0.0.0")
 
+# API Key
+RAGON_API_KEY = os.getenv("RAGON_API_KEY", "")
+if not RAGON_API_KEY:
+    raise ValueError("RAGON_API_KEY not set in .env")
+
 # Paths (no hardcoded defaults - must be set in .env)
 DKM_PDF_PATH = os.getenv("DKM_PDF_PATH", "")
 if not DKM_PDF_PATH:

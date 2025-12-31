@@ -12,19 +12,52 @@ from datetime import datetime
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 sys.path.insert(0, str(Path(__file__).parent))  # Flask-API/src for settings
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header, Depends, Request
 from pydantic import BaseModel
 from langchain_community.vectorstores import FAISS
+import ipaddress
 
 # Import từ RagON
 from minirag.vectorstore import build_or_load_vectorstore
 from minirag.config import get_settings
+
+# API Key from settings
+from settings import RAGON_API_KEY
 
 app = FastAPI(
     title="RagON",
     description="RAG Persistent Service - FAISS index trong RAM",
     version="1.0.0"
 )
+
+
+def is_local_or_lan(client_ip: str) -> bool:
+    """Check if client is localhost or LAN (private network)"""
+    try:
+        ip = ipaddress.ip_address(client_ip)
+        # Localhost
+        if ip.is_loopback:
+            return True
+        # Private networks (LAN): 10.x.x.x, 172.16-31.x.x, 192.168.x.x
+        if ip.is_private:
+            return True
+        return False
+    except ValueError:
+        return False
+
+
+def verify_api_key(request: Request, x_api_key: str = Header(None)):
+    """Verify API key - skip for localhost/LAN, require for external"""
+    client_ip = request.client.host
+
+    # Skip API check for localhost and LAN
+    if is_local_or_lan(client_ip):
+        return None
+
+    # Require API key for external clients
+    if x_api_key != RAGON_API_KEY:
+        raise HTTPException(status_code=401, detail="Invalid or missing API key")
+    return x_api_key
 
 # In-memory cache: {pdf_dir: {index: FAISS, loaded_at: datetime}}
 INDEX_CACHE: Dict[str, Dict[str, any]] = {}
@@ -33,7 +66,6 @@ INDEX_CACHE: Dict[str, Dict[str, any]] = {}
 from settings import DKM_PDF_PATH
 
 class QueryRequest(BaseModel):
-    pdf_directory: str = DKM_PDF_PATH
     question: str
     top_k: Optional[int] = None
 
@@ -97,13 +129,13 @@ async def cache_stats():
 
 
 @app.post("/query", response_model=QueryResponse)
-async def query_rag(req: QueryRequest):
-    """Query RAG với FAISS index trong RAM"""
-    pdf_path = Path(req.pdf_directory).resolve()
+async def query_rag(req: QueryRequest, api_key: str = Depends(verify_api_key)):
+    """Query RAG với FAISS index trong RAM - yêu cầu API key"""
+    pdf_path = Path(DKM_PDF_PATH).resolve()
     pdf_dir_str = str(pdf_path)
 
     if not pdf_path.exists():
-        raise HTTPException(status_code=404, detail=f"Directory not found: {req.pdf_directory}")
+        raise HTTPException(status_code=404, detail=f"DKM_PDF_PATH not found: {DKM_PDF_PATH}")
 
     # Check cache
     from_cache = pdf_dir_str in INDEX_CACHE

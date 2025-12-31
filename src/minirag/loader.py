@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from typing import List
 from langchain_community.document_loaders import PyPDFLoader
-from langchain.docstore.document import Document
+from langchain_core.documents import Document
 
 
 def load_pdfs(pdf_dir: str) -> List[Document]:

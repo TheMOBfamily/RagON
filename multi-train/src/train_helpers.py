@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import List, Any
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.docstore.document import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_core.documents import Document
 from .train_config import get_settings
 
 

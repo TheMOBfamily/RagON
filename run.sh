@@ -147,9 +147,8 @@ else
         echo "🚀 Starting service at $RAGON_API_URL"
 
         # Start service in background
-        cd "$PROJECT_ROOT/RagON"
         RAGON_PORT=$(echo "$RAGON_API_URL" | grep -oP ':\K[0-9]+$' || echo "1411")
-        nohup "$PROJECT_ROOT/RagON/Start-RAG-persistent-service.sh" "$RAGON_PORT" > /dev/null 2>&1 &
+        nohup "$PROJECT_ROOT/Start-service-8e4367fed117.sh" "$RAGON_PORT" --no-tunnel > /tmp/ragon-startup.log 2>&1 &
 
         # Wait for service to be ready (max 30 seconds)
         echo "⏳ Waiting for service to start..."
@@ -161,12 +160,12 @@ else
             fi
             if [ $i -eq 30 ]; then
                 echo "❌ Service failed to start after 30 seconds"
-                echo "   Try manual start: $PROJECT_ROOT/RagON/Start-RAG-persistent-service.sh 2011"
+                echo "   Check log: cat /tmp/ragon-startup.log"
+                echo "   Manual start: $PROJECT_ROOT/Start-service-8e4367fed117.sh $RAGON_PORT"
                 echo "   Or use --legacy flag to run without service"
                 exit 1
             fi
         done
-        cd "$PROJECT_ROOT"
     fi
 
     echo "✅ RagON service detected"

@@ -1,0 +1,48 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "PDF: Open PDF in Evince",
+      "type": "shell",
+      "command": "python3 ${workspaceFolder}/.vscode/open-pdf.py '${file}'",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared",
+        "close": true
+      }
+    },
+    {
+      "label": "Anthropic: Open Claude-code in Terminal",
+      "type": "shell",
+      "command": "gnome-terminal",
+      "args": [
+        "--",
+        "bash",
+        "-c",
+        "${workspaceFolder}/.fong/claude-dangerously-skip-permissions.sh; exec bash"
+      ],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared",
+        "close": true
+      }
+    },
+    {
+      "label": "Clipboard: copy file to Clipboard",
+      "type": "shell",
+      "command": "python3 ${workspaceFolder}/.vscode/copy-to-clipboard.py '${file}'",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared",
+        "close": true
+      }
+    }
+  ]
+}

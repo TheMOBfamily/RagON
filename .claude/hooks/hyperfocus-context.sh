@@ -8,8 +8,8 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 DEBUG_LOG="$SCRIPT_DIR/debug.log"
 
-# Init prompt path (from env, with fallback)
-INIT_PROMPT_PATH="${BOILERPLATE_ROOT:-/home/fong/Projects/boiler-plate-cursor-project-with-init-prompt}/.fong/init-prompt.md"
+# Init prompt path (parameterized)
+INIT_PROMPT_PATH="/home/fong/Projects/boiler-plate-cursor-project-with-init-prompt/.fong/init-prompt.md"
 
 # Log function
 log_debug() {

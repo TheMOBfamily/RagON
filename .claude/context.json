@@ -1,0 +1,38 @@
+{
+  "updated": "2025-12-02T16:48:00+07:00",
+
+  "what": {
+    "completed": [
+      "Thêm init_prompt_injection config vào no-quit-rule-config.json",
+      "Mở rộng no-quit-rule.sh để inject init-prompt.md với probability",
+      "Fix bug: init_prompt giờ độc lập với active message probability"
+    ],
+    "current": null,
+    "next": "Đổi probability về 10 cho production"
+  },
+
+  "where": {
+    "folder": ".claude/hooks",
+    "files": [
+      ".claude/hooks/no-quit-rule.sh",
+      ".claude/hooks/no-quit-rule-config.json"
+    ]
+  },
+
+  "who": {
+    "branch": "feature/init-prompt-injection"
+  },
+
+  "when": {
+    "started": "2025-12-02T16:43:00+07:00",
+    "completed": "2025-12-02T16:48:00+07:00"
+  },
+
+  "how": {
+    "init_prompt_injection": {
+      "config": "init_prompt_injection.enabled + probability + path",
+      "logic": "Độc lập với active message - có thể output riêng",
+      "test": "5/5 runs với probability=100 → all show init_prompt"
+    }
+  }
+}

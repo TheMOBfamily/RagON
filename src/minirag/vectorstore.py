@@ -4,7 +4,7 @@ import hashlib
 from pathlib import Path
 from typing import List, Dict
 from langchain_community.vectorstores import FAISS
-from langchain.docstore.document import Document
+from langchain_core.documents import Document
 from .embedder import get_embeddings
 from .shm_cache import SharedMemoryCache
 

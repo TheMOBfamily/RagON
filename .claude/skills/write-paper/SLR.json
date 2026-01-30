@@ -1,0 +1,205 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "meta": {
+    "name": "SLR-instructions",
+    "version": "1.0.0",
+    "updated": "2026-01-28T21:00:00+07:00",
+    "description": "Instructions and rules for Systematic Literature Review in write-paper skill. Governs how to search, verify, and integrate references."
+  },
+
+  "philosophy": "Query → Verify → Integrate → Cross-check. Never cite what you haven't verified. SSoT = PDF→MD files.",
+
+  "source_hierarchy": {
+    "description": "Trust levels for citation sources. Higher = more trusted.",
+    "levels": [
+      {"priority": 1, "source": "SLR/pdfs-md/", "trust": "SSoT", "use": "Final cross-check. Exact quotes. rg verification."},
+      {"priority": 2, "source": "SLR/abstracts/slr-papers-selected.json", "trust": "HIGH", "use": "Author, year, title verification."},
+      {"priority": 3, "source": "MCP RAG (DKM NewRAG)", "trust": "MEDIUM", "use": "Discovery. Initial research. Broad knowledge."},
+      {"priority": 4, "source": "MCP Perplexity", "trust": "MEDIUM", "use": "Latest papers. Real-time search. Gap filling."},
+      {"priority": 5, "source": "AI training knowledge", "trust": "LOW", "use": "Hypothesis only. MUST verify with sources 1-4."}
+    ]
+  },
+
+  "search_workflow": {
+    "description": "Mandatory steps when searching for new references.",
+    "steps": [
+      "1. Query MCP NewRAG with SHORT keywords (2-4 words). Min 3 queries per topic.",
+      "2. Query MCP Perplexity for latest papers (2019-2026). Structured RCIFENI-O format.",
+      "3. rg search in SLR/pdfs-md/ for specific terms, authors, or findings.",
+      "4. Cross-check with SLR/abstracts/slr-papers-selected.json (author, year, title).",
+      "5. If source unknown: Use APA7 verify workflow (.fong/instructions/academic/instructions-apa7-citation-verify.json)."
+    ],
+    "rules": [
+      "NEVER cite a paper you haven't verified in at least 2 sources.",
+      "NEVER fabricate author names, years, or journal names.",
+      "RAG output = hypothesis. Must verify with SSoT (pdfs-md) or abstracts.json.",
+      "Perplexity output = hypothesis. Must cross-check before citing.",
+      "When in doubt, mark as [UNVERIFIED] and flag for manual review."
+    ]
+  },
+
+  "mcp_newrag_workflow": {
+    "description": "How to use MCP NewRAG (DKM Knowledge Base) for citation discovery. ~10,000 books.",
+    "tool": "mcp__dkm-knowledgebase__queryNewRAG",
+    "capacity": "~10,000 books covering TAM, education, Bayesian statistics, research methods",
+    "query_strategy": {
+      "format": "Array of 1-3 queries per request",
+      "length": "SHORT (2-4 words per query). Long queries = poor results.",
+      "frequency": "Min 3 queries per topic. 7+ queries for complex papers.",
+      "timing": "BEFORE writing (discovery) + DURING writing (gap filling)"
+    },
+    "example_queries": {
+      "TAM_topic": ["TAM technology acceptance model", "perceived usefulness ease of use", "UTAUT unified theory"],
+      "LMS_topic": ["LMS learning management system", "Moodle student satisfaction", "Google Classroom adoption"],
+      "Bayesian_topic": ["Bayesian analysis education", "posterior probability inference", "brms ordinal regression"],
+      "Vietnam_topic": ["Vietnam higher education technology", "Vietnamese student e-learning", "provincial university digital"]
+    },
+    "output_handling": {
+      "summary": "AI-generated synthesis. Use for understanding, not citation.",
+      "chunks": "Actual text from source PDFs. Contains page numbers.",
+      "apa7_recommended": "AI-inferred citation. MUST verify with hash lookup.",
+      "score": "Relevance score 0-10. Prefer chunks with score >= 7."
+    },
+    "verification_workflow": [
+      "1. Extract hash from source filename (e.g., 2024-Artificial-Intelligence...PDF)",
+      "2. Check if paper already in SLR/abstracts/slr-papers-selected.json",
+      "3. If not in SLR: Use APA7 verify workflow to confirm citation",
+      "4. Add verified citation to references.bib with full BibTeX",
+      "5. Integrate into paper section with context (sample size, method, finding)"
+    ],
+    "hash_lookup": {
+      "description": "Get correct APA7 citation from DKM-PDFs metadata",
+      "steps": [
+        "md5sum file.pdf | cut -d' ' -f1  # Get hash",
+        "ls DKM-PDFs/<hash>*/  # Find folder",
+        "cat DKM-PDFs/<hash>/<hash>-apa-information.json  # Get APA7 info"
+      ]
+    },
+    "anti_patterns": [
+      "NEVER use apa7_recommended directly without verification",
+      "NEVER query with long sentences (>6 words)",
+      "NEVER skip cross-check with SLR/pdfs-md/ or abstracts.json",
+      "NEVER assume NewRAG chunk = complete paper context"
+    ]
+  },
+
+  "pdf_conversion": {
+    "description": "Rules for converting SLR PDFs to searchable text.",
+    "command": "pdftotext input.pdf output.md",
+    "location": {
+      "input": "SLR/pdfs/",
+      "output": "SLR/pdfs-md/"
+    },
+    "rules": [
+      "ALL PDFs in SLR/pdfs/ MUST be converted to SLR/pdfs-md/ before rg search.",
+      "Convert once. Re-convert only if PDF updated.",
+      "Naming: same as PDF but .md extension.",
+      "Check conversion: wc -l on .md file. 0 lines = failed conversion."
+    ]
+  },
+
+  "integration_rules": {
+    "description": "Rules for integrating new references into the paper.",
+    "bib": [
+      "Add to LaTeX/bib/references.bib with full BibTeX entry.",
+      "Required fields: author, title, journal/publisher, year.",
+      "Optional but preferred: volume, number, pages, doi.",
+      "Group new entries under comment header: % === NEW REFERENCES (round N) ==="
+    ],
+    "sections": [
+      "Every claim MUST have a citation. No uncited statements.",
+      "Use \\citep{} for parenthetical, \\citet{} for textual citations.",
+      "When adding new citation, also add context (sample size, method, key finding).",
+      "Prefer recent papers (2019-2026) over older ones for empirical claims.",
+      "Classic/foundational refs (Davis 1989, Venkatesh 2003) are exceptions."
+    ],
+    "build": [
+      "After adding refs: bibtex + 2x xelatex to resolve all citations.",
+      "Check for undefined citation warnings in build log.",
+      "Verify page count hasn't dropped (sign of broken LaTeX)."
+    ]
+  },
+
+  "quality_filters": {
+    "description": "Minimum criteria for including a paper as reference.",
+    "required": [
+      "Peer-reviewed journal or reputable conference",
+      "Year >= 2014 (10-year window). Exceptions: foundational papers (Davis 1989).",
+      "Relevance: TAM, LMS, Moodle, GWfE, Bayesian education, or comparative studies.",
+      "Language: English or Vietnamese with English abstract."
+    ],
+    "preferred": [
+      "Year >= 2019 (5-year window)",
+      "Citations >= 10 (established impact)",
+      "Indexed in Scopus, WoS, or Google Scholar",
+      "Contains empirical data (sample size, statistics)"
+    ]
+  },
+
+  "target_metrics": {
+    "description": "Target numbers for bibliography completeness.",
+    "minimum_refs": 25,
+    "target_refs": 30,
+    "optimal_refs": 35,
+    "category_balance": {
+      "TAM_foundational": "2-3 refs (Davis 1989, Venkatesh 2003)",
+      "TAM_LMS_empirical": "8-10 refs (GWfE, Moodle, comparative)",
+      "Bayesian_methods": "5-6 refs (Kruschke, McElreath, Gelman, etc.)",
+      "LMS_general": "5-7 refs (adoption, satisfaction, effectiveness)",
+      "Vietnam_context": "2-3 refs (Bui Khoa 2020, Pham 2023)",
+      "methodology": "3-4 refs (Morris 2019, simulation design)"
+    }
+  },
+
+  "anti_patterns": [
+    "NEVER add citation to bib without also using it in at least one section.",
+    "NEVER cite paper based solely on AI knowledge without verification.",
+    "NEVER use generic team names as authors (e.g., 'Research Group') for real papers.",
+    "NEVER skip bibtex rebuild after adding new references.",
+    "NEVER assume Perplexity/RAG citations are correct without cross-check."
+  ],
+
+  "crossref_api_workflow": {
+    "description": "Verify citation metadata via CrossRef DOI API. Official DOI registry. Very high trust.",
+    "trust_level": "VERY HIGH - Official publisher metadata",
+    "command": "curl -s 'https://api.crossref.org/works/{DOI}' | jq '{title: .message.title[0], author: [.message.author[].family], journal: .message[\"container-title\"][0], year: .message.issued[\"date-parts\"][0][0], doi: .message.DOI}'",
+    "example": {
+      "doi": "10.1016/j.compedu.2011.11.012",
+      "result": {
+        "title": "The acceptance of Moodle technology by business administration students",
+        "author": ["Gacar"],
+        "journal": "Computers & Education",
+        "year": 2012,
+        "doi": "10.1016/j.compedu.2011.11.012"
+      }
+    },
+    "use_cases": [
+      "Verify DOI exists and resolves correctly",
+      "Get official author names (correct spelling)",
+      "Get official journal/publisher name",
+      "Get correct publication year",
+      "Cross-check RAG/Perplexity citation claims"
+    ],
+    "workflow": [
+      "1. Extract DOI from citation claim",
+      "2. Query CrossRef API with DOI",
+      "3. Compare returned metadata with claimed citation",
+      "4. If match: Citation verified",
+      "5. If mismatch: Flag for manual review",
+      "6. Add verified citation to references.bib"
+    ],
+    "anti_patterns": [
+      "NEVER trust DOI without API verification",
+      "NEVER assume DOI format is correct (validate response)",
+      "NEVER skip CrossRef when DOI is available"
+    ]
+  },
+
+  "cross_references": {
+    "apa7_verify": ".fong/instructions/academic/instructions-apa7-citation-verify.json",
+    "citation_workflow": ".claude/skills/write-paper/SKILL.md (Citation Verification section)",
+    "abstracts": "SLR/abstracts/slr-papers-selected.json",
+    "pdfs_md": "SLR/pdfs-md/",
+    "bib_file": "LaTeX/bib/references.bib"
+  }
+}

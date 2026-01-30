@@ -1,0 +1,13 @@
+{
+  "_comment": "SKELETON FILE - Clone vào .claude/context.json của mỗi dự án",
+  "_usage": "AI update file này với progress tracking. LUÔN dùng relative path: .claude/context.json",
+  "_critical": "KHÔNG edit absolute path. Mỗi dự án có file context.json riêng.",
+
+  "updated": "ISO8601_TIMESTAMP",
+  "project": "{PROJECT_NAME}",
+  "last_completed": "{LAST_DONE_PROMPT}",
+  "phase": "1",
+  "status": "pending|in_progress|completed",
+  "next": "{NEXT_PROMPT}",
+  "findings": {}
+}

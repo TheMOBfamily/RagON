@@ -1,0 +1,52 @@
+{
+  "version": "0.3.0",
+  "claude_flags": {
+    "verbose": false,
+    "dangerously_skip_permissions": true
+  },
+  "context_json": {
+    "_comment": "Context.json tracking - RELATIVE PATH ONLY",
+    "relative_path": ".claude/context.json",
+    "skeleton": "docs/skeleton-context.json",
+    "rules": [
+      "LUÔN dùng relative path: .claude/context.json",
+      "KHÔNG dùng absolute path",
+      "Nếu file chưa có → tạo từ skeleton",
+      "Mỗi dự án có file context.json riêng"
+    ]
+  },
+  "patterns": {
+    "default": "linear-loop-prompt",
+    "available": ["linear-loop-prompt", "skeleton-wh"],
+    "linear-loop-prompt": {
+      "version": "2.0.0",
+      "doc": "pattern-linear-loop-prompt.md",
+      "diary_template": "diary-template.json",
+      "prompts_dir": "stateless-prompts/",
+      "init_file": "00-init-*.md",
+      "find_current": "ls *.md | grep ^prompt- | grep -v ^done- | head -1",
+      "mark_done": "mv prompt-{id}.md done-prompt-{id}.md",
+      "checkpoint_interval": 5,
+      "max_retry_attempts": 5
+    }
+  },
+  "thinking": {
+    "enabled": true,
+    "trigger": "[ultrathink]",
+    "description": "Trigger words kích hoạt extended thinking (31,999 tokens max)"
+  },
+  "prompt_prefix": "[ultrathink]\n\nMANDATORY RULES:\n(1) Git: Operate ONLY within current branch, commit frequently, NO destructive commands (reset --hard, push --force).\n(2) Telegram Verbose (CRITICAL): Report to Telegram BEFORE-DURING-AFTER every task. NOT just at completion. Send continuous updates throughout execution.\n(3) Query DKM: MUST consult DKM knowledge base (RAG/Perplexity/Context7) at least once per task.\n(4) Context.json: ALWAYS use RELATIVE path .claude/context.json - NEVER absolute path. Create from skeleton if missing.\n(5) Task Completion (CRITICAL - REF: ftask/13-task-lifecycle-mark-done.md): After EVERY task:\n    a) Fill Execution Log in task file (timestamps, actions, outputs)\n    b) Update YAML status: pending → completed\n    c) RENAME file: XX-task.md → done-XX-task.md\n    d) Git commit: git add . && git commit -m \"feat(task-XX): [description]\"\n    e) Update init-autoclaude.json: add task# to completed array\n    ⚠️ DO NOT proceed to next task until ALL 5 steps complete!\n(6) Task Creation (FORCE): Khi tạo task mới PHẢI `cp .fong/instructions/ftask/TEMPLATE-SKELETON.md XX-task.md` rồi Edit fill. ❌ KHÔNG Write từ scratch!",
+  "prompt_suffix": "NO-QUIT-RULE activated. NO QUESTION ASKED. Just keep doing until OKR KRs done. DO NOT ask clarifying questions - make autonomous decisions and proceed.\n\n[TELEGRAM CONTINUOUS REPORTING - CRITICAL]\nYou MUST send Telegram updates VERY FREQUENTLY throughout task execution:\n- BEFORE: Send when starting each subtask\n- DURING: Send progress updates continuously (every significant step)\n- AFTER: Send completion status with summary\n\nDO NOT wait until task completion to report. Report continuously as you work.\n\nCurl command:\ncurl -s -X POST \"https://api.telegram.org/bot8550967390:AAEZcUW78U6QA9CI71YA1eDWTlttkbj4O7M/sendMessage\" -d chat_id=\"7274005773\" -d text=\"YOUR_MESSAGE\" -d parse_mode=\"HTML\"\n\nFormat: [TIMESTAMP] EMOJI STATUS: Message\nExamples:\n- [2025-12-03 13:45:00] 🚀 START: Beginning task X\n- [2025-12-03 13:45:30] ⏳ PROGRESS: Step 1 of 5 completed\n- [2025-12-03 13:46:00] 📊 UPDATE: Downloaded 50/100 files\n- [2025-12-03 13:47:00] ✅ DONE: Task X completed successfully",
+  "terminal": {
+    "type": "gnome-terminal",
+    "verify_after_launch": true,
+    "wait_for_input_on_exit": true
+  },
+  "telegram": {
+    "token": "8550967390:AAEZcUW78U6QA9CI71YA1eDWTlttkbj4O7M",
+    "chat_id": "7274005773",
+    "api_url": "https://api.telegram.org/bot8550967390:AAEZcUW78U6QA9CI71YA1eDWTlttkbj4O7M/sendMessage",
+    "curl_example": "curl -s -X POST \"https://api.telegram.org/bot8550967390:AAEZcUW78U6QA9CI71YA1eDWTlttkbj4O7M/sendMessage\" -d chat_id=\"7274005773\" -d text=\"<b>Bold</b> message\" -d parse_mode=\"HTML\"",
+    "timestamp_format": "TZ='Asia/Ho_Chi_Minh' date '+%Y-%m-%d %H:%M:%S'"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "_comment": "Config parameters. All settings in one place.",
+
+  "data": {
+    "input_file": "data/raw_data.json",
+    "output_dir": "output/"
+  },
+
+  "analysis": {
+    "alpha": 0.05,
+    "n_simulations": 1000,
+    "seed": 12345
+  },
+
+  "visualization": {
+    "width": 8,
+    "height": 6,
+    "dpi": 300,
+    "format": "pdf"
+  },
+
+  "colors": {
+    "black": "#000000",
+    "orange": "#E69F00",
+    "skyblue": "#56B4E9",
+    "bluishgreen": "#009E73",
+    "yellow": "#F0E442",
+    "blue": "#0072B2",
+    "vermilion": "#D55E00",
+    "reddishpurple": "#CC79A7"
+  }
+}

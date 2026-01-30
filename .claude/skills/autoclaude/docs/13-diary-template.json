@@ -1,0 +1,108 @@
+{
+  "$schema": "diary-template-v2.0.0",
+  "description": "Template cho diary của mỗi prompt/loop. Copy file này và rename thành diary-{prompt-id}-{timestamp}.json",
+  "pattern": "linear-loop-prompt",
+  "pattern_version": "2.0.0",
+
+  "prompt_id": "prompt-XX",
+  "prompt_file": "prompt-XX-task-name.md",
+  "loop_number": 1,
+  "total_loops": 30,
+
+  "environment": {
+    "branch": "feat-fong-xxx",
+    "target": "localhost",
+    "working_dir": null
+  },
+
+  "status": "pending",
+  "started_at": null,
+  "completed_at": null,
+  "duration_minutes": null,
+
+  "pre_work": {
+    "db_backup": {
+      "done": false,
+      "file": null,
+      "timestamp": null
+    },
+    "code_backup": {
+      "done": false,
+      "commit": null,
+      "timestamp": null
+    }
+  },
+
+  "execution": {
+    "attempts": 0,
+    "max_attempts": 5,
+    "current_step": null,
+    "steps_completed": [],
+    "steps_failed": []
+  },
+
+  "debug_log": {
+    "php_dbug_ids": [],
+    "js_fongdebug_ids": [],
+    "errors_found": [],
+    "errors_fixed": []
+  },
+
+  "autochrome_tests": {
+    "screenshots": [],
+    "dom_extracts": [],
+    "test_results": []
+  },
+
+  "artifacts": {
+    "files_created": [],
+    "files_modified": [],
+    "files_deleted": []
+  },
+
+  "acceptance_gates": {
+    "syntax_check": null,
+    "unit_tests": null,
+    "integration_tests": null,
+    "ui_tests": null,
+    "all_passed": false
+  },
+
+  "checkpoint": {
+    "is_checkpoint_loop": false,
+    "checkpoint_number": null,
+    "verification_summary": null
+  },
+
+  "notes": {
+    "technical_decisions": [],
+    "lessons_learned": [],
+    "next_prompt_hints": []
+  },
+
+  "previous_prompt_reference": {
+    "prompt_id": null,
+    "diary_file": null,
+    "key_outputs": []
+  },
+
+  "mcp_tools_used": {
+    "php_reader": false,
+    "js_reader": false,
+    "autochrome": false,
+    "safe_calculation": false,
+    "dkm_rag": false,
+    "mem0": false
+  },
+
+  "memory_refs": {
+    "files_read": [],
+    "files_updated": []
+  },
+
+  "escalation": {
+    "escalated": false,
+    "reason": null,
+    "escalation_file": null
+  }
+}

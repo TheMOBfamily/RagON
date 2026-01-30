@@ -1,0 +1,67 @@
+{
+  "name": "autochrome",
+  "version": "1.2.0",
+  "updated": "2026-01-28T11:40:00+07:00",
+  "description": "Chrome automation via MCP - sessionless, jQuery auto-inject",
+  "author": "Fong",
+  "changelog": [
+    {
+      "version": "1.2.0",
+      "date": "2026-01-28",
+      "changes": [
+        "PATH CONVENTION: relative (internal) vs absolute (lesson-learned SSoT)",
+        "Update instructions-autochrome.md with KNOWLEDGE SOURCE PRIORITY",
+        "Skill is now clone-friendly (relative paths for internal refs)",
+        "Priority: SKILL → LESSON-LEARNED → INSTRUCTIONS (fallback)"
+      ]
+    },
+    {
+      "version": "1.1.1",
+      "date": "2026-01-28",
+      "changes": [
+        "Move lesson-learned to MCP source (SSoT/DRY)",
+        "lesson-learned path: /home/fong/Projects/MCPs/autochrome-mcp/lesson-learned/",
+        "Add CHECKLIST TRƯỚC-TRONG-SAU to SKILL.md",
+        "Add smart-search instructions for cross-project access"
+      ]
+    },
+    {
+      "version": "1.1.0",
+      "date": "2026-01-28",
+      "changes": [
+        "Add lesson-learned/ folder for memetic knowledge",
+        "Add dom-structures/ for saved DOM patterns",
+        "Add scripts/ for reusable automation scripts",
+        "Add tricks/ for quick solutions",
+        "Add manifest.json for version tracking",
+        "Implement BEFORE-DURING-AFTER workflow"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-01-28",
+      "changes": [
+        "Initial skill creation",
+        "12 MCP tools documented",
+        "Z-Library download workflow",
+        "jQuery patterns",
+        "Shadow DOM handling"
+      ]
+    }
+  ],
+  "structure": {
+    "SKILL.md": "Main skill documentation",
+    "manifest.json": "Version tracking (this file)",
+    "lesson-learned/": "WHEN/THEN/FIX knowledge base",
+    "dom-structures/": "Saved DOM patterns by domain",
+    "scripts/": "Reusable .sh automation scripts",
+    "tricks/": "Quick solutions and workarounds",
+    "examples/": "Usage examples",
+    "references/": "External references"
+  },
+  "workflow": {
+    "BEFORE": "Read lesson-learned/, check dom-structures/",
+    "DURING": "Record issues immediately, save DOM if new",
+    "AFTER": "Write WHEN/THEN/FIX, update manifest version"
+  }
+}

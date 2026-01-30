@@ -1,0 +1,72 @@
+{
+  "_comment": "SKELETON FILE - Clone và rename thành init-autoclaude.json khi tạo automation task folder",
+  "_usage": "AI đọc file này TRƯỚC TIÊN khi tiếp cận automation task folder",
+  "_reference": "ftask/00-ftask.md § Stateless File Creation Rules",
+  "_extends": "ftask/skeleton-init.json",
+
+  "module_name": "{MODULE_NAME}",
+  "created": "{YYYY-MM-DD}",
+  "updated": "{YYYY-MM-DD}",
+  "status": "active",
+  "pattern": "LLP|Skeleton-WH",
+
+  "files_order": [
+    "01-{first-task}.md",
+    "02-{second-task}.md",
+    "03-{third-task}.md"
+  ],
+
+  "current_task": "01-{first-task}.md",
+
+  "completed": [],
+
+  "automation_config": {
+    "no_quit_rule": true,
+    "telegram_notify": true,
+    "commit_interval_minutes": 30,
+    "model": "default|cheap",
+    "_model_note": "default=opus (không truyền gì), cheap=haiku (--cheap)"
+  },
+
+  "conventions": {
+    "file_naming": "XX-task-name.md (XX = số thứ tự)",
+    "done_marking": "done-XX-task-name.md (RENAME, không tạo mới)",
+    "skeleton_required": "OKRs + 5W1H + Cross-check trong mỗi file",
+    "iterative_reading": "Read→Work→Read→Work (min 2 reads/file)"
+  },
+
+  "CLONE_TEMPLATE_RULE": {
+    "CRITICAL": true,
+    "instruction": "AI MUST clone from template, NEVER write new file from scratch",
+    "workflow": [
+      "1. READ template file first",
+      "2. RUN cp command to clone",
+      "3. EDIT cloned file only"
+    ],
+    "templates": {
+      "ftask": {
+        "source": ".fong/instructions/ftask/TEMPLATE-SKELETON.md",
+        "command": "cp .fong/instructions/ftask/TEMPLATE-SKELETON.md .fong/instructions/ftask/XX-task.md"
+      },
+      "autoclaude_prompt": {
+        "source": ".fong/claude-code-automation/docs/skeleton-prompt.md",
+        "command": "cp .fong/claude-code-automation/docs/skeleton-prompt.md {target}"
+      }
+    },
+    "forbidden": "Using Write tool to create new .md file without cloning",
+    "why": "Clone preserves structure, prevents missing sections, ensures consistency"
+  },
+
+  "READ_BEFORE_DURING_AFTER": {
+    "CRITICAL": true,
+    "target": ".claude/context.json",
+    "instruction": "AI PHẢI đọc context.json TRƯỚC-TRONG-SAU mỗi task",
+    "timing": {
+      "BEFORE": "Hiểu phase, status, insights đã có. Check context mới inject từ bên ngoài",
+      "DURING": "Verify thông tin khi ra quyết định. Update 5w1h, six_hats",
+      "AFTER": "Update với findings mới, lessons learned"
+    },
+    "why": "Context.json chứa verified insights, giúp AI không fabricate",
+    "path_rule": "LUÔN dùng relative path .claude/context.json - KHÔNG absolute path"
+  }
+}

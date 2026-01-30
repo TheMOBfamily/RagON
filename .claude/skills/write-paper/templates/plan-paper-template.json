@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "_comment": "Template for paper plan file. Copy and fill.",
+
+  "meta": {
+    "title": "",
+    "short_title": "",
+    "target_journal": "",
+    "created": "YYYY-MM-DDTHH:MM:SS+07:00",
+    "updated": "",
+    "status": "draft",
+    "version": "0.1.0"
+  },
+
+  "okr": {
+    "objective": "Write {topic} paper for {journal}",
+    "key_results": [
+      "KR1: Complete all 6 phases (WP0-WP5)",
+      "KR2: LaTeX compiles without errors",
+      "KR3: All claims cited and numbers verified"
+    ]
+  },
+
+  "topic": {
+    "research_question": "",
+    "gap_statement": "",
+    "contribution": "",
+    "keywords": []
+  },
+
+  "hypotheses": [
+    {
+      "id": "H1",
+      "confidence": "H",
+      "statement": "",
+      "status": "proposed",
+      "evidence": [],
+      "notes": ""
+    }
+  ],
+
+  "5w1h": {
+    "what": "",
+    "why": "",
+    "where": "",
+    "when": "",
+    "who": "",
+    "how": ""
+  },
+
+  "sections_progress": {
+    "methods": {"status": "pending", "progress": 0, "commits": []},
+    "results": {"status": "pending", "progress": 0, "commits": []},
+    "discussion": {"status": "pending", "progress": 0, "commits": []},
+    "introduction": {"status": "pending", "progress": 0, "commits": []},
+    "conclusion": {"status": "pending", "progress": 0, "commits": []},
+    "abstract": {"status": "pending", "progress": 0, "commits": []}
+  },
+
+  "dss_queries": [
+    {
+      "phase": "WP1",
+      "tool": "NewRAG",
+      "query": "",
+      "result_summary": "",
+      "timestamp": ""
+    }
+  ],
+
+  "validation_log": [
+    {
+      "phase": "WP4",
+      "check": "",
+      "result": "",
+      "timestamp": ""
+    }
+  ],
+
+  "git_commits": [
+    {
+      "hash": "",
+      "message": "",
+      "phase": "",
+      "timestamp": ""
+    }
+  ],
+
+  "checklist": {
+    "kill_items": {
+      "ffp_verified": false,
+      "data_real": false,
+      "reproducibility_ensured": false
+    },
+    "wp0_conjecture": {
+      "okr_defined": false,
+      "hypotheses_formed": false,
+      "5w1h_answered": false
+    },
+    "wp1_investigate": {
+      "newrag_queried": false,
+      "perplexity_queried": false,
+      "arxiv_queried": false,
+      "evidence_mapped": false
+    },
+    "wp2_skeleton": {
+      "latex_created": false,
+      "sections_structure": false,
+      "bibliography_started": false
+    },
+    "wp3_fill": {
+      "methods_written": false,
+      "results_written": false,
+      "discussion_written": false,
+      "introduction_written": false,
+      "conclusion_written": false,
+      "abstract_last": false
+    },
+    "wp4_refine": {
+      "red_team_done": false,
+      "numbers_verified": false,
+      "citations_checked": false
+    },
+    "wp5_submit": {
+      "all_files_prepared": false,
+      "git_committed": false
+    }
+  },
+
+  "notes": []
+}

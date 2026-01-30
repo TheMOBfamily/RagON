@@ -1,0 +1,249 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "meta": {
+    "name": "write-paper",
+    "version": "2.0.0",
+    "updated": "2026-01-28T19:45:00+07:00",
+    "description": "Agile-Kaizen academic paper writing. Skeleton-first. DSS-integrated. Hypothesis-driven.",
+    "aliases": ["{write-paper}", "{paper}", "{viết bài báo}", "{viết luận văn}"]
+  },
+
+  "workflow": {
+    "philosophy": "Có gì làm đó. Skeleton first. Fill as you go. Query while writing.",
+    "phases": ["CONJECTURE", "INVESTIGATE", "SKELETON", "FILL", "REFINE", "SUBMIT"],
+    "mantras": [
+      "Skeleton first. Content later.",
+      "Query while writing. Not before.",
+      "One section at a time. Commit each.",
+      "Wrong draft > No draft.",
+      "Refine until good enough. Not perfect."
+    ]
+  },
+
+  "plan_file": {
+    "location": ".fong/docs/plans/",
+    "filename_pattern": "plan-paper-{short-title}-{YYYYMMDD}.json",
+    "required_sections": {
+      "meta": {
+        "title": "",
+        "target_journal": "",
+        "created": "",
+        "status": "draft"
+      },
+      "okr": {
+        "objective": "",
+        "key_results": []
+      },
+      "topic": {
+        "research_question": "",
+        "gap_statement": "",
+        "contribution": ""
+      },
+      "hypotheses": [],
+      "5w1h": {
+        "what": "",
+        "why": "",
+        "where": "",
+        "when": "",
+        "who": "",
+        "how": ""
+      },
+      "sections_progress": {
+        "methods": {"status": "pending", "progress": 0},
+        "results": {"status": "pending", "progress": 0},
+        "discussion": {"status": "pending", "progress": 0},
+        "introduction": {"status": "pending", "progress": 0},
+        "conclusion": {"status": "pending", "progress": 0},
+        "abstract": {"status": "pending", "progress": 0}
+      },
+      "dss_queries": [],
+      "validation_log": [],
+      "git_commits": []
+    }
+  },
+
+  "dss_integration": {
+    "protocol": "DSS7",
+    "minimum_sources": 7,
+    "query_timing": "DURING writing, not just BEFORE",
+    "query_style": "SHORT (2-4 words). SPECIFIC. FREQUENT.",
+    "per_section_queries": 3
+  },
+
+  "latex_skeleton": {
+    "template_priority": [
+      "Journal official template",
+      "elsarticle, IEEEtran, acmart",
+      ".fong/instructions/LaTeX/templates/"
+    ],
+    "structure": {
+      "main.tex": "Entry point. Include sections.",
+      "sections/": "01-intro, 02-literature, 03-methods, 04-results, 05-discussion, 06-conclusion",
+      "figs/": "Vector (PDF/SVG) preferred",
+      "references.bib": "BibLaTeX format"
+    }
+  },
+
+  "agile_rules": {
+    "commit_frequency": "After each section draft",
+    "section_order": ["methods", "results", "discussion", "introduction", "conclusion", "abstract"],
+    "abstract_timing": "LAST. After paper complete.",
+    "iteration": "Draft → Query DSS → Refine → Commit → Next section"
+  },
+
+  "ethics": {
+    "ffp_rule": "Zero tolerance: Fabrication, Falsification, Plagiarism",
+    "reproducibility": "Code + Data + Methods available",
+    "kill_items": [
+      "Real data? (NOT fabricated)",
+      "Unmodified data? (NOT falsified)",
+      "Original work? (NOT plagiarized)"
+    ]
+  },
+
+  "checklist_master": {
+    "total_items": 21,
+    "sections": {
+      "kill_items": [
+        "FFP verified?",
+        "Data real & unmodified?",
+        "Reproducibility ensured?"
+      ],
+      "pre_writing": [
+        "Target journal identified?",
+        "Research gap defined?",
+        "OKR stated?",
+        "Plan file created?"
+      ],
+      "skeleton": [
+        "LaTeX skeleton created?",
+        "Sections structure ready?",
+        "Bibliography started?"
+      ],
+      "filling": [
+        "Methods written (replicable)?",
+        "Results written (numbers)?",
+        "Discussion written?",
+        "Introduction written?",
+        "Conclusion written?",
+        "Abstract written LAST?"
+      ],
+      "validation": [
+        "DSS queries >=7?",
+        "Numbers verified (Safe Math)?",
+        "Red Team validation?",
+        "Build successful?"
+      ],
+      "submission": [
+        "All files prepared?",
+        "Git committed?"
+      ]
+    }
+  },
+
+  "mindset_integration": {
+    "primary": ["{agile}", "{no skip}", "{double check}"],
+    "secondary": ["{checklist}", "{safety first}", "{evidence first}"],
+    "per_phase": {
+      "CONJECTURE": ["{brainstorm}", "{5w1h}"],
+      "INVESTIGATE": ["{evidence first}", "{double check}"],
+      "SKELETON": ["{agile}", "{checklist}"],
+      "FILL": ["{no skip}", "{agile}"],
+      "REFINE": ["{red team}", "{double check}"],
+      "SUBMIT": ["{checklist}", "{safety first}"]
+    }
+  },
+
+  "code_rules": {
+    "philosophy": "Modular. JSON-driven. One entry point.",
+    "file_limit": "<100 LOC per file. Split if larger.",
+    "entry_point": "init.sh - single command to run all",
+    "data_format": {
+      "input": "JSON files in data/ or config/",
+      "output": "JSON for data, PDF/PNG for figures",
+      "clean_data": "Raw → Clean → JSON (no CSV in final)"
+    },
+    "color_palette": {
+      "source": ".fong/instructions/LaTeX/04-color-palette.md",
+      "standard": "CUD (Okabe-Ito)",
+      "colors": {
+        "CUDBlack": "#000000",
+        "CUDOrange": "#E69F00",
+        "CUDSkyBlue": "#56B4E9",
+        "CUDBluishGreen": "#009E73",
+        "CUDYellow": "#F0E442",
+        "CUDBlue": "#0072B2",
+        "CUDVermilion": "#D55E00",
+        "CUDReddishPurple": "#CC79A7"
+      }
+    },
+    "r_structure": {
+      "folder": "R/",
+      "files": {
+        "init.sh": "Entry point. Runs all scripts.",
+        "config/parameters.json": "All configurable parameters",
+        "data/": "JSON data files",
+        "src/": "R scripts (<100 LOC each)",
+        "output/": "Generated figures, tables"
+      },
+      "naming": "{NN}-{action}.R (e.g., 01-load-data.R)"
+    },
+    "python_structure": {
+      "folder": "python/",
+      "files": {
+        "init.sh": "Entry point. Runs all scripts.",
+        "config/parameters.json": "All configurable parameters",
+        "data/": "JSON data files",
+        "src/": "Python scripts (<100 LOC each)",
+        "output/": "Generated figures, tables"
+      },
+      "naming": "{NN}_{action}.py (e.g., 01_load_data.py)"
+    },
+    "checklist": [
+      "All files <100 LOC?",
+      "Data in JSON format?",
+      "Config in JSON?",
+      "init.sh runs all?",
+      "CUD colors used?",
+      "Output reproducible?"
+    ]
+  },
+
+  "slr_workflow": {
+    "tool": "/home/fong/Projects/slr-paper-downloader/slr.sh",
+    "sources": ["arxiv", "openalex", "semantic_scholar"],
+    "query_strategy": {
+      "angles": ["framework", "technology", "alternative", "method", "context", "theory"],
+      "minimum_queries": 5,
+      "examples": [
+        "TAM technology acceptance model LMS",
+        "Google Workspace Education G Suite teacher",
+        "Moodle LMS teacher satisfaction",
+        "Bayesian simulation acceptance",
+        "e-learning Vietnam higher education",
+        "UTAUT unified theory technology"
+      ]
+    },
+    "output_structure": {
+      "pdfs": "SLR/pdfs/",
+      "abstracts": "SLR/abstracts/slr-papers-selected.json",
+      "synthesis": "SLR/notes/synthesis.md"
+    },
+    "quality_filters": {
+      "year": ">= 2019",
+      "citations": ">= 10",
+      "source": "peer-reviewed preferred"
+    },
+    "integration": "WP1: INVESTIGATE phase"
+  },
+
+  "cross_references": {
+    "dss_skill": ".claude/skills/dss/SKILL.md",
+    "professor_v2": ".fong/instructions/instructions-do-take-note-stick-the-plan-professor-v2.json",
+    "latex_guide": ".fong/instructions/LaTeX/",
+    "color_palette": ".fong/instructions/LaTeX/04-color-palette.md",
+    "slr_tool": "/home/fong/Projects/slr-paper-downloader/slr.sh",
+    "academic_checklist_vi": ".fong/instructions/academic/scientific-plain-vietnamese-checklist.md",
+    "academic_checklist_en": ".fong/instructions/academic/scientific-plain-english-checklist.md"
+  }
+}

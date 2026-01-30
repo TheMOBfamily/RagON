@@ -1,0 +1,76 @@
+{
+  "name": "Debug DOM via Autochrome MCP",
+  "version": "1.0.0",
+  "updated": "2026-01-29",
+  "description": "Hướng dẫn dùng executeScript MCP để debug DOM: overlap, CSS, element relationships",
+  "tool": "mcp__autochrome-mcp__executeScript",
+  "note": "jQuery ($) tự động inject. Không cần import.",
+
+  "recipes": {
+    "1_check_overlap": {
+      "description": "Phát hiện 2 elements đè lên nhau (overlap/z-index)",
+      "script": "var results = []; var els = document.querySelectorAll('*'); els.forEach(function(el) { var r = el.getBoundingClientRect(); if (r.width > 0 && r.height > 0) { results.push({ tag: el.tagName, id: el.id, class: el.className.toString().slice(0,60), top: Math.round(r.top), left: Math.round(r.left), width: Math.round(r.width), height: Math.round(r.height), zIndex: getComputedStyle(el).zIndex, position: getComputedStyle(el).position, pointerEvents: getComputedStyle(el).pointerEvents }); } }); JSON.stringify(results.filter(function(r) { return r.position !== 'static' || r.zIndex !== 'auto'; }), null, 2);",
+      "usage": "Tìm elements có position không static hoặc z-index không auto → nghi overlap"
+    },
+
+    "2_check_element_css": {
+      "description": "Lấy toàn bộ computed CSS của 1 element theo selector",
+      "script_template": "var el = document.querySelector('SELECTOR'); if (!el) { 'Element not found'; } else { var cs = getComputedStyle(el); var props = ['display','visibility','opacity','position','zIndex','pointerEvents','cursor','overflow','width','height','margin','padding','border','background','color','fontSize','fontWeight','transform','transition','boxShadow','outline']; var result = {}; props.forEach(function(p) { result[p] = cs.getPropertyValue(p.replace(/([A-Z])/g, '-$1').toLowerCase()); }); result._boundingRect = JSON.parse(JSON.stringify(el.getBoundingClientRect())); result._selector = 'SELECTOR'; result._tagName = el.tagName; result._id = el.id; result._classList = Array.from(el.classList); JSON.stringify(result, null, 2); }",
+      "example_selector": ".tck-tab[data-section='doc']",
+      "usage": "Thay SELECTOR bằng CSS selector cần check"
+    },
+
+    "3_check_click_target": {
+      "description": "Xác định element nào thực sự nhận click tại tọa độ (x,y)",
+      "script_template": "var el = document.querySelector('SELECTOR'); var rect = el.getBoundingClientRect(); var cx = rect.left + rect.width/2; var cy = rect.top + rect.height/2; var target = document.elementFromPoint(cx, cy); JSON.stringify({ intended: { tag: el.tagName, id: el.id, class: el.className.toString().slice(0,80) }, actual_click_target: { tag: target.tagName, id: target.id, class: target.className.toString().slice(0,80) }, same: el === target, coordinates: { x: Math.round(cx), y: Math.round(cy) }, target_zIndex: getComputedStyle(target).zIndex, target_pointerEvents: getComputedStyle(target).pointerEvents }, null, 2);",
+      "usage": "Phát hiện element khác chặn click (overlay, modal, z-index cao hơn)"
+    },
+
+    "4_check_event_listeners": {
+      "description": "Kiểm tra element có event listeners không (Chrome DevTools API)",
+      "script_template": "var el = document.querySelector('SELECTOR'); if (!el) { 'Not found'; } else { var listeners = getEventListeners ? getEventListeners(el) : 'getEventListeners not available in executeScript context'; JSON.stringify({ selector: 'SELECTOR', tag: el.tagName, hasOnclick: !!el.onclick, attributeOnclick: el.getAttribute('onclick'), disabled: el.disabled, ariaDisabled: el.getAttribute('aria-disabled'), tabIndex: el.tabIndex, listeners: listeners }, null, 2); }",
+      "note": "getEventListeners() chỉ có trong DevTools Console, không có trong executeScript. Dùng recipe 3 thay thế."
+    },
+
+    "5_compare_elements": {
+      "description": "So sánh CSS giữa 2 elements (active vs inactive tab)",
+      "script_template": "var el1 = document.querySelector('SELECTOR_1'); var el2 = document.querySelector('SELECTOR_2'); if (!el1 || !el2) { 'Element not found'; } else { var props = ['display','visibility','opacity','pointerEvents','cursor','zIndex','position','color','background','border','transform']; var diff = {}; props.forEach(function(p) { var v1 = getComputedStyle(el1)[p]; var v2 = getComputedStyle(el2)[p]; diff[p] = { el1: v1, el2: v2, same: v1 === v2 }; }); JSON.stringify({ selector1: 'SELECTOR_1', selector2: 'SELECTOR_2', diff: diff }, null, 2); }",
+      "example": "SELECTOR_1 = .tck-tab.active, SELECTOR_2 = .tck-tab:not(.active)"
+    },
+
+    "6_find_covering_elements": {
+      "description": "Tìm TẤT CẢ elements đang che phủ 1 element cụ thể",
+      "script_template": "var el = document.querySelector('SELECTOR'); var rect = el.getBoundingClientRect(); var points = [[rect.left+2, rect.top+2], [rect.right-2, rect.top+2], [rect.left+2, rect.bottom-2], [rect.right-2, rect.bottom-2], [rect.left+rect.width/2, rect.top+rect.height/2]]; var covers = []; points.forEach(function(p, i) { var hit = document.elementFromPoint(p[0], p[1]); if (hit && hit !== el && !el.contains(hit)) { covers.push({ point: i, x: Math.round(p[0]), y: Math.round(p[1]), coverTag: hit.tagName, coverId: hit.id, coverClass: hit.className.toString().slice(0,60), coverZIndex: getComputedStyle(hit).zIndex }); } }); JSON.stringify({ target: 'SELECTOR', covered: covers.length > 0, coveringElements: covers }, null, 2);"
+    },
+
+    "7_element_tree": {
+      "description": "Hiển thị cây DOM ancestors + siblings của 1 element",
+      "script_template": "var el = document.querySelector('SELECTOR'); if (!el) { 'Not found'; } else { var ancestors = []; var cur = el; while (cur && cur !== document.body) { ancestors.unshift({ tag: cur.tagName, id: cur.id, class: cur.className.toString().slice(0,40), display: getComputedStyle(cur).display, visibility: getComputedStyle(cur).visibility, overflow: getComputedStyle(cur).overflow }); cur = cur.parentElement; } var siblings = Array.from(el.parentElement.children).map(function(s) { return { tag: s.tagName, id: s.id, class: s.className.toString().slice(0,40), isSelf: s === el }; }); JSON.stringify({ ancestors: ancestors, siblings: siblings }, null, 2); }"
+    },
+
+    "8_quick_click_test": {
+      "description": "Programmatic click + kiểm tra kết quả",
+      "script_template": "var el = document.querySelector('SELECTOR'); if (!el) { 'Not found'; } else { var before = { display: Array.from(document.querySelectorAll('.tck-section')).map(function(s) { return s.dataset.section + ':' + s.style.display; }) }; el.click(); var after = { display: Array.from(document.querySelectorAll('.tck-section')).map(function(s) { return s.dataset.section + ':' + s.style.display; }) }; JSON.stringify({ clicked: 'SELECTOR', before: before, after: after, changed: JSON.stringify(before) !== JSON.stringify(after) }, null, 2); }"
+    }
+  },
+
+  "workflow": {
+    "debug_click_not_working": [
+      "Step 1: recipe 3 (check_click_target) → element nào nhận click?",
+      "Step 2: recipe 6 (find_covering_elements) → có gì che không?",
+      "Step 3: recipe 2 (check_element_css) → pointer-events, visibility, display?",
+      "Step 4: recipe 7 (element_tree) → ancestor nào ẩn/overflow?",
+      "Step 5: recipe 8 (quick_click_test) → click bằng JS có work không?"
+    ],
+    "debug_overlap": [
+      "Step 1: recipe 1 (check_overlap) → liệt kê positioned elements",
+      "Step 2: recipe 5 (compare_elements) → so sánh z-index",
+      "Step 3: recipe 6 (find_covering_elements) → xác nhận overlap"
+    ],
+    "debug_style_mismatch": [
+      "Step 1: recipe 2 (check_element_css) → computed styles",
+      "Step 2: recipe 5 (compare_elements) → diff 2 elements",
+      "Step 3: captureScreenshot → visual confirmation"
+    ]
+  }
+}

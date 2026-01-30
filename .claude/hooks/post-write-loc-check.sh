@@ -1,12 +1,13 @@
 #!/bin/bash
-# PostToolUse Hook: LOC & Principles Reminder + Large File Warning
+# PostToolUse Hook: LOC Limit Enforcement
 # Matcher: Write
-# Version: 2.0.0
+# Version: 3.0.0
+# Updated: 2026-01-03
 
 # === CONFIG ===
-RATE=10           # Percentage for general reminder (1-100)
-LOC_THRESHOLD=300 # Files > this LOC get sliding window suggestion
-WINDOW_PERCENT=5  # Sliding window percentage
+LOC_LIMIT_PHP=150
+LOC_LIMIT_DEFAULT=100
+LARGE_FILE_THRESHOLD=300
 
 # === READ STDIN ===
 INPUT=$(cat)
@@ -16,30 +17,48 @@ FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty' 2>/dev/null)
 [[ -z "$FILE_PATH" ]] && exit 0
 [[ ! -f "$FILE_PATH" ]] && exit 0
 
-# === CHECK LOC FOR LARGE FILES ===
+# Get file extension
+EXT="${FILE_PATH##*.}"
+
+# Skip non-code files
+case "$EXT" in
+    php|js|jsx|ts|tsx|py) ;;
+    *) exit 0 ;;
+esac
+
+# === COUNT LOC ===
 LOC=$(wc -l < "$FILE_PATH" 2>/dev/null || echo 0)
 
-if [[ "$LOC" -gt "$LOC_THRESHOLD" ]]; then
-    WINDOW_LINES=$((LOC * WINDOW_PERCENT / 100))
-    [[ "$WINDOW_LINES" -lt 20 ]] && WINDOW_LINES=20
-
-    cat << EOF
-{
-  "decision": "block",
-  "reason": "LARGE_FILE: $FILE_PATH has $LOC LOC (>$LOC_THRESHOLD). For precise reading, use sliding window ${WINDOW_PERCENT}% (~${WINDOW_LINES} lines): sed -n '1,${WINDOW_LINES}p' file | Then sed -n '${WINDOW_LINES},$((WINDOW_LINES*2))p' etc. Or use awk/grep for targeted search."
-}
-EOF
-    exit 0
+# === DETERMINE LIMIT ===
+if [[ "$EXT" == "php" ]]; then
+    LIMIT=$LOC_LIMIT_PHP
+else
+    LIMIT=$LOC_LIMIT_DEFAULT
 fi
 
-# === GENERAL REMINDER (RATE%) ===
-[[ $((RANDOM % 100)) -ge $RATE ]] && exit 0
+# === CHECK VIOLATION ===
+if [[ "$LOC" -gt "$LIMIT" ]]; then
+    FILENAME=$(basename "$FILE_PATH")
 
-cat << 'EOF'
+    if [[ "$LOC" -gt "$LARGE_FILE_THRESHOLD" ]]; then
+        # Large file: sliding window suggestion
+        WINDOW=$((LOC / 10))
+        [[ "$WINDOW" -lt 30 ]] && WINDOW=30
+        cat << EOF
 {
   "decision": "block",
-  "reason": "CODE_REMINDER: Function/Logic <100 LOC, Class <150 LOC (excluding docs/comments). Principles: SOLID (SRP), KISS, DRY, SSoT, YAGNI. Extensions: .php .js .jsx .ts .tsx .py"
+  "reason": "LOC_VIOLATION: $FILENAME has $LOC LOC (limit: $LIMIT for .$EXT). LARGE FILE detected. Split into modules. Use sliding window (~$WINDOW lines) for reading. BEFORE write: \`smart search\` for existing utils/helpers/classes. Reuse > Reinvent. DRY: No duplicate logic. No hardcoding: extract constants. SOLID/SRP: 1 unit = 1 responsibility. Ref: CLAUDE.md"
 }
 EOF
+    else
+        cat << EOF
+{
+  "decision": "block",
+  "reason": "LOC_VIOLATION: $FILENAME has $LOC LOC (limit: $LIMIT for .$EXT). Modularize now. BEFORE write: \`smart search\` for existing utils/helpers/classes. Reuse > Reinvent. DRY: No duplicate logic. No hardcoding: extract constants. SOLID/SRP/KISS/DRY/SSoT/YAGNI. Ref: CLAUDE.md"
+}
+EOF
+    fi
+    exit 0
+fi
 
 exit 0

@@ -77,4 +77,12 @@ example/.mini_rag_index/
 
 # Git backup
 .git.backup-*/
+
+# Fong instructions (exclude memory to track lessons learned)
 .fong/
+!.fong/.memory/
+
+# New PDFs staging folder
+2026-01-30-new-PDFs/
+*.PDF
+*.pdf

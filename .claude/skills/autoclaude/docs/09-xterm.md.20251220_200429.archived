@@ -1,0 +1,34 @@
+---
+title: Xterm Background Mode
+updated: 2025-12-03
+---
+
+# Xterm Background Mode
+
+## Chạy với font + auto-close
+
+```bash
+xterm -fa 'Ubuntu Sans Mono' -fs 13 -title "Claude" -e "./script.sh" &
+```
+
+## Flags
+
+| Flag | Mô tả |
+|------|-------|
+| `-fa 'Ubuntu Sans Mono'` | Font family |
+| `-fs 13` | Font size |
+| `-title "X"` | Tiêu đề |
+| `-e "cmd"` | Chạy command |
+| `&` | Background |
+
+## Auto-close
+
+Script tự close sau 30s (trong `autoclaude-loop.sh`):
+```bash
+echo ">>> Closing in 30s..."
+sleep 30
+```
+
+## Verified
+
+✅ 2025-12-03 - Font size 14, auto-close 30s
